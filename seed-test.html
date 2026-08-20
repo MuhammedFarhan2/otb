@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body>
+<script>
+localStorage.setItem('programmes', JSON.stringify([
+    { name: 'Robotics Showcase', locked: true, criteria: [
+        { agenda: 'Innovation & Creativity', marks: 25 },
+        { agenda: 'Design & Build', marks: 25 }
+    ]}
+]));
+localStorage.setItem('present', JSON.stringify({ 'Robotics Showcase': true }));
+localStorage.setItem('marks', JSON.stringify({
+    'Robotics Showcase': {
+        'azharotb@gmail.com': { A: { total: 42, rows: [22, 20] }, B: { total: 38, rows: [18, 20] }, C: { total: 40, rows: [20, 20] } },
+        'azharotb1@gmail.com': { A: { total: 36, rows: [18, 18] }, B: { total: 44, rows: [22, 22] }, C: { total: 30, rows: [15, 15] } },
+        'azharotb2@gmail.com': { A: { total: 39, rows: [20, 19] }, B: { total: 41, rows: [21, 20] }, C: { total: 38, rows: [19, 19] } }
+    }
+}));
+window.location.href = 'audience-test.html';
+</script>
+</body>
+</html>

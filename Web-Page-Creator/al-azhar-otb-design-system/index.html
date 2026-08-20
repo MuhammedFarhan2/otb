@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AL-AZHAR OTB Design System</title>
+  <meta name="description" content="AL-AZHAR OTB Design System — design system preview built on Replit.">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-title">AL-AZHAR OTB Design System</div>
+        <div class="sidebar-subtitle">Browse the system</div>
+      </div>
+      <input class="sidebar-search" type="search" placeholder="Search design system…" aria-label="Search design system" id="search-input">
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <p class="no-results" id="no-results" hidden>No sections match "<span id="no-results-query"></span>".</p>
+    </aside>
+    <main class="main">
+      <details class="mobile-nav" id="mobile-nav">
+        <summary>Browse sections: <span id="active-name" class="active-name">Overview</span></summary>
+        <div class="mobile-nav-body" id="mobile-nav-body"></div>
+      </details>
+      <div class="main-inner" id="main-inner"></div>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

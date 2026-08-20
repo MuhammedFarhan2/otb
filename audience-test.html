@@ -1,0 +1,1670 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audience</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #FBF6EC;
+            background-image: url('ChatGPT Image Aug 16, 2026, 10_58_23 PM.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #111827;
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #FBF6EC;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @media (min-width: 768px) {
+            body {
+                background-image: url('ChatGPT Image Aug 16, 2026, 10_58_35 PM.png');
+            }
+            .desktop-nav {
+                display: flex;
+            }
+            .hamburger-btn {
+                display: none !important;
+            }
+        }
+        .top-bar {
+            background-color: #245A5E;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 300;
+        }
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .top-logo {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 900;
+            color: #F8C025;
+        }
+        .top-title {
+            color: #FFFFFF;
+            font-size: 17px;
+            font-weight: bold;
+        }
+        .top-subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 1px;
+        }
+        .desktop-nav {
+            display: none;
+            gap: 6px;
+        }
+        .desktop-nav button {
+            padding: 6px 16px;
+            border: 2px solid #FFFFFF;
+            border-radius: 8px;
+            background: transparent;
+            color: #FFFFFF;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .desktop-nav button.active {
+            background-color: #FFFFFF;
+            color: #023047;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            padding: 16px 12px;
+        }
+        .desktop-video-layout {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #000000;
+            z-index: 100;
+        }
+        .desktop-video-layout video {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .video-card {
+            background-color: #FFFFFF;
+            border: 2px solid #023047;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .video-card:hover {
+            transform: scale(1.02);
+        }
+        .video-card video {
+            width: 100%;
+            display: block;
+            background: #000;
+        }
+        .video-card .vc-info {
+            padding: 12px;
+        }
+        .video-card .vc-name {
+            font-size: 15px;
+            font-weight: bold;
+            color: #023047;
+            margin-bottom: 4px;
+        }
+        .video-card .vc-date {
+            font-size: 13px;
+            color: #667085;
+        }
+        .video-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 600;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-modal.show {
+            display: flex;
+        }
+        .video-modal video {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 12px;
+        }
+        .video-modal-close {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #FFFFFF;
+            color: #023047;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 601;
+        }
+        .hamburger-btn {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+            width: 36px;
+            height: 36px;
+            padding: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .hamburger-btn .line {
+            display: block;
+            height: 2px;
+            background-color: #FFFFFF;
+            border-radius: 2px;
+        }
+        .main-area {
+            padding: 16px 12px 40px;
+        }
+        .video-player-wrap {
+            margin: 0 12px 12px;
+            background-color: #000000;
+            border: 2px solid #023047;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .video-player-wrap video {
+            width: 100%;
+            display: block;
+        }
+        .video-loading {
+            text-align: center;
+            color: #667085;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 40px 20px;
+        }
+        .video-player-wrap.no-video {
+            display: none;
+        }
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            background-color: #f5f0eb;
+            border: 2px solid #8B4513;
+            border-radius: 24px;
+            z-index: 200;
+            padding: 6px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .mobile-bottom-nav a {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
+            color: #b0b0b0;
+            text-decoration: none;
+        }
+        .mobile-bottom-nav a.active {
+            color: #4a4a4a;
+        }
+        .mobile-bottom-nav a svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .mobile-bottom-nav a img {
+            width: 24px;
+            height: 24px;
+            filter: brightness(0) saturate(100%) invert(75%);
+            opacity: 0.6;
+        }
+        .mobile-bottom-nav a.active img {
+            filter: brightness(0) saturate(100%) invert(25%);
+            opacity: 1;
+        }
+        .nav-loader {
+            display: none;
+            position: fixed;
+            top: 44px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(245, 240, 235, 1);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-loader.show {
+            display: flex;
+        }
+        .nav-loader-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0d5cc;
+            border-top-color: #8B4513;
+            border-radius: 50%;
+            animation: nav-spin 0.8s linear infinite;
+        }
+        @keyframes nav-spin {
+            to { transform: rotate(360deg); }
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 2px solid #023047;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        .prog-name {
+            color: #023047;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            padding-bottom: 10px;
+            margin-bottom: 14px;
+        }
+        .waiting {
+            text-align: center;
+            color: #667085;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 60px 20px;
+        }
+        .result-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 17px;
+            border: 2px solid transparent;
+        }
+        .result-row .code {
+            color: #023047;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .result-row .avg {
+            color: #023047;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .place-row {
+            background-color: #CAF0F8;
+            border-color: #023047;
+        }
+        .place-label {
+            color: #FFFFFF;
+            border-radius: 999px;
+            padding: 3px 14px;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        .place-1st .place-label {
+            background-color: #FFD60A;
+            color: #023047;
+        }
+        .place-2nd .place-label {
+            background-color: #8A99A6;
+        }
+        .place-3rd .place-label {
+            background-color: #C77E3F;
+        }
+        .rank-item {
+            margin-bottom: 8px;
+        }
+        .rank-item .result-row {
+            margin-bottom: 4px;
+        }
+        .rank-bar-track {
+            height: 8px;
+            background: #E7ECEF;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .rank-bar {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.6s ease;
+        }
+        .rank-vchart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 32px;
+            padding: 0 16px;
+            min-height: 180px;
+        }
+        .rank-vcol {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            max-width: 160px;
+        }
+        .rank-vcol .rv-school {
+            color: #023047;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .rank-vcol .rv-bar-track {
+            width: 100%;
+            height: 130px;
+            background: #E7ECEF;
+            border-radius: 12px 12px 8px 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+        }
+        .rank-vcol .rv-bar {
+            width: 100%;
+            min-height: 4px;
+            border-radius: 12px 12px 8px 8px;
+            transition: height 0.6s ease;
+        }
+        .rank-vcol .rv-val {
+            color: #023047;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .rank-vcol .rv-place {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 3px 14px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 6px;
+        }
+        .rank-vcol .rv-place.g1 {
+            background-color: #FFD60A;
+            color: #023047;
+        }
+        .rank-vcol .rv-place.g2 {
+            background-color: #8A99A6;
+            color: #FFFFFF;
+        }
+        .rank-vcol .rv-place.g3 {
+            background-color: #C77E3F;
+            color: #FFFFFF;
+        }
+        .announce-title {
+            color: #023047;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 14px;
+            margin-bottom: 8px;
+        }
+        .chart {
+            position: relative;
+            height: calc(100vh - 180px);
+            min-height: 380px;
+            margin-top: 16px;
+        }
+        .bars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 0 24px;
+        }
+        .col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            width: 260px;
+        }
+        .col-school {
+            color: #023047;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .col-school.hidden-school {
+            visibility: hidden;
+        }
+        .bar {
+            --bar-a: #aebbc2;
+            --bar-b: #dbe3e6;
+            --bar-c: #8e9fa8;
+            --bar-top: #dce5e8;
+            --bar-top-light: #f8fbfb;
+            --bar-top-dark: #9aaab2;
+            position: relative;
+            width: 200px;
+            border-radius: 50% / 22px;
+            min-height: 4px;
+            background: linear-gradient(90deg, var(--bar-a) 0%, var(--bar-b) 42%, var(--bar-c) 100%);
+            box-shadow:
+                9px 14px 18px rgba(30, 48, 52, 0.22),
+                inset -8px 0 10px rgba(0, 0, 0, 0.08);
+            transition: height 0.3s ease, filter 0.35s ease;
+        }
+        .bar::before,
+        .bar::after {
+            content: '';
+            position: absolute;
+            pointer-events: none;
+        }
+        .bar::before {
+            top: -22px;
+            left: 0;
+            right: 0;
+            height: 44px;
+            border-radius: 50%;
+            background:
+                radial-gradient(ellipse at 33% 22%, rgba(255,255,255,0.82) 0 8%, transparent 28%),
+                radial-gradient(ellipse at 50% 52%, var(--bar-top-light) 0%, var(--bar-top) 62%, var(--bar-top-dark) 100%);
+            box-shadow:
+                inset 0 -4px 4px rgba(0, 0, 0, 0.14),
+                0 2px 3px rgba(255,255,255,0.45);
+        }
+        .bar::after {
+            top: 5%;
+            bottom: 8%;
+            left: 16%;
+            width: 11%;
+            border-radius: 999px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.68), rgba(255,255,255,0.05));
+            opacity: 0.78;
+        }
+        .bar.no-anim {
+            transition: none;
+        }
+        .third-marquee {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            pointer-events: none;
+            display: none;
+            z-index: 3;
+        }
+        .third-marquee.active {
+            display: block;
+        }
+        .third-marquee-line {
+            height: 88px;
+            overflow: hidden;
+            font-family: 'Montserrat', 'Arial Black', 'Segoe UI', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            white-space: nowrap;
+        }
+        .third-marquee-inner {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee-slide 3.8s linear 1 forwards;
+        }
+        .third-marquee-line .tm-word {
+            color: #000000;
+            font-size: 74px;
+            font-weight: 900;
+        }
+        .third-marquee-line .tm-team {
+            font-size: 74px;
+            font-weight: 900;
+        }
+        .third-marquee-line .tm-amp {
+            color: #000000;
+            font-size: 74px;
+            font-weight: 900;
+        }
+        @keyframes marquee-slide {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        .popper {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .popper span {
+            position: absolute;
+            top: -14px;
+            border-radius: 2px;
+            opacity: 0;
+            animation: popper-fall var(--d, 2s) cubic-bezier(.4, 0, .6, 1) forwards;
+        }
+        @keyframes popper-fall {
+            0% {
+                opacity: 1;
+                transform: translate(0, -8px) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx, 0px), 62vh) rotate(var(--r, 360deg));
+            }
+        }
+        .bar-grey {
+            --bar-a: #aebbc2;
+            --bar-b: #dbe3e6;
+            --bar-c: #8e9fa8;
+            --bar-top: #dce5e8;
+            --bar-top-light: #f8fbfb;
+            --bar-top-dark: #9aaab2;
+            background-color: #C9D2D9;
+        }
+        .bar-yellow {
+            --bar-a: #c99400;
+            --bar-b: #f8c025;
+            --bar-c: #d49e00;
+            --bar-top: #f8c025;
+            --bar-top-light: #fff2a5;
+            --bar-top-dark: #c38c00;
+            background-color: #F8C025;
+        }
+        .bar-green {
+            --bar-a: #21844c;
+            --bar-b: #59c978;
+            --bar-c: #197340;
+            --bar-top: #50bf70;
+            --bar-top-light: #b7f0c1;
+            --bar-top-dark: #258d50;
+            background-color: #48A82E;
+        }
+        .bar-red {
+            --bar-a: #ad2934;
+            --bar-b: #ef5a62;
+            --bar-c: #a51f2d;
+            --bar-top: #ef6268;
+            --bar-top-light: #ffb1af;
+            --bar-top-dark: #af2d36;
+            background-color: #E54438;
+        }
+        .bar-orange {
+            --bar-a: #be4c0c;
+            --bar-b: #fb8a2d;
+            --bar-c: #c14c08;
+            --bar-top: #fb8a2d;
+            --bar-top-light: #ffd0a1;
+            --bar-top-dark: #bb4608;
+            background-color: #F97316;
+        }
+        .bar-blue {
+            --bar-a: #11739d;
+            --bar-b: #36a9d0;
+            --bar-c: #08688e;
+            --bar-top: #39a9cf;
+            --bar-top-light: #a8e8f5;
+            --bar-top-dark: #13759b;
+            background-color: #3B82F6;
+        }
+        .bar-purple {
+            --bar-a: #74358f;
+            --bar-b: #b86bd0;
+            --bar-c: #713088;
+            --bar-top: #b96ed0;
+            --bar-top-light: #e9b7f0;
+            --bar-top-dark: #7d3a98;
+            background-color: #A855F7;
+        }
+        .bar-pink {
+            --bar-a: #a92d6d;
+            --bar-b: #f05a9c;
+            --bar-c: #a32667;
+            --bar-top: #f15c9d;
+            --bar-top-light: #ffc0dc;
+            --bar-top-dark: #a72b6b;
+            background-color: #EC4899;
+        }
+        .bar-brown {
+            --bar-a: #63402b;
+            --bar-b: #a97950;
+            --bar-c: #593520;
+            --bar-top: #a67850;
+            --bar-top-light: #ddbaa0;
+            --bar-top-dark: #613d29;
+            background-color: #8B5E3C;
+        }
+        .col-val {
+            color: #023047;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .split {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+        .control-panel {
+            width: 20%;
+            flex-shrink: 0;
+            background-color: #FFFFFF;
+            border: 2px solid #3E2F1C;
+            border-radius: 16px;
+            padding: 14px 12px;
+            min-height: 500px;
+        }
+        .control-panel h3 {
+            color: #023047;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .prog-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border: 2px solid #3E2F1C;
+            border-radius: 10px;
+            background-color: #FFFFFF;
+            color: #023047;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+        }
+        .prog-btn:hover {
+            background-color: #D4C9B5;
+            color: #3E2F1C;
+            border-color: #3E2F1C;
+        }
+        .prog-btn.active {
+            background-color: #20575B;
+            color: #FFFFFF;
+            border-color: #20575B;
+        }
+        .chart-panel {
+            flex: 1;
+            background-color: #FFFFFF;
+            border: 2px solid #3E2F1C;
+            border-radius: 16px;
+            padding: 16px;
+        }
+        @media (max-width: 767px) {
+            .top-bar {
+                padding: 12px 14px;
+            }
+            .top-title {
+                font-size: 17px;
+            }
+            .top-logo {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            .top-subtitle {
+                display: block;
+            }
+            .hamburger-btn {
+                display: none;
+            }
+            .video-player-wrap {
+                display: none !important;
+            }
+            .mobile-bottom-nav {
+                display: flex;
+            }
+            .main-area {
+                padding: 16px 12px 90px;
+            }
+            .split {
+                flex-direction: column;
+            }
+            .control-panel {
+                width: 100%;
+            }
+            .col {
+                width: 100%;
+            }
+            .bar {
+                width: 100%;
+                max-width: 170px;
+                border-radius: 50% / 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-left">
+            <div class="top-logo">A</div>
+            <div>
+                <div class="top-title">AL-AZHAR's OTB</div>
+                <div class="top-subtitle">Live Scoreboard</div>
+            </div>
+        </div>
+        <nav class="desktop-nav" id="desktop-nav">
+            <button id="desk-results" class="active">Results</button>
+            <button id="desk-videos">Videos</button>
+        </nav>
+        <button class="hamburger-btn" id="hamburger" aria-label="Menu">
+            <span class="line"></span>
+            <span class="line"></span>
+            <span class="line"></span>
+        </button>
+    </div>
+    <div class="video-player-wrap no-video" id="video-player-wrap">
+        <div class="video-loading" id="video-loading">Loading video...</div>
+        <video id="audience-video" style="display:none"></video>
+    </div>
+    <div class="main-area" id="main-area"></div>
+    <div class="nav-loader" id="nav-loader">
+        <div class="nav-loader-spinner"></div>
+    </div>
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+        <a href="#" id="nav-ranks" class="active">
+            <img src="bar-graph.png" alt="Ranks" style="width:24px;height:24px;filter:brightness(0) saturate(100%) invert(45%);">
+        </a>
+        <a href="#" id="nav-overall">
+            <img src="trophy.png" alt="Overall" style="width:24px;height:24px;">
+        </a>
+    </nav>
+    <div class="video-modal" id="video-modal">
+        <button class="video-modal-close" id="video-modal-close">X</button>
+        <video id="modal-video"></video>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="otb-sync.js"></script>
+    <script>
+        const SCHOOL_NAMES = { A: 'Nizamiyya', B: 'Zitouna', C: 'Qurthuba' };
+        const SCHOOL_COLORS = { A: 'yellow', B: 'red', C: 'green' };
+        let view = window.innerWidth >= 768 ? 'videos' : 'ranks';
+        let selectedProgramme = null;
+        let lastAnimated = null;
+        let revealStage = 0;
+        let cycleStep = 0;
+        let lockedBars = [];
+        let tieFirst = false;
+        let revealedProgrammes = [];
+        let cycleInterval = null;
+        let refreshInterval = null;
+
+        function getData() {
+            const programmes = JSON.parse(localStorage.getItem('programmes') || '[]');
+            const marksData = JSON.parse(localStorage.getItem('marks') || '{}');
+            const presentData = JSON.parse(localStorage.getItem('present') || '{}');
+            return { programmes: programmes, marksData: marksData, presentData: presentData };
+        }
+
+        function syncData(cb) {
+            Promise.all([Sync.loadProgrammes(), Sync.loadAllMarks(), Sync.loadPresent()])
+                .then(function () { cb(getData()); })
+                .catch(function () { cb(getData()); });
+        }
+
+        function computeResults(d, p) {
+            const data = d.marksData[p.name] || {};
+            const judges = Object.keys(data);
+            const programmeTotal = (p.criteria || []).reduce(function (s, c) {
+                return s + (Number(c.marks) || 0);
+            }, 0);
+            const avgs = {};
+            ['A', 'B', 'C'].forEach(function (letter) {
+                let sum = 0;
+                let count = 0;
+                judges.forEach(function (g) {
+                    const e = data[g] && data[g][letter];
+                    if (e) {
+                        sum += e.total;
+                        count += 1;
+                    }
+                });
+                avgs[letter] = count ? sum / count : null;
+            });
+            return { avgs: avgs, programmeTotal: programmeTotal };
+        }
+
+        function computeOverall(d) {
+            const progs = d.programmes.filter(function (p) {
+                return revealedProgrammes.indexOf(p.name) !== -1;
+            });
+            const avgs = { A: 0, B: 0, C: 0 };
+            let denom = 0;
+            progs.forEach(function (p) {
+                const res = computeResults(d, p);
+                denom += res.programmeTotal;
+                ['A', 'B', 'C'].forEach(function (l) {
+                    if (res.avgs[l] != null) avgs[l] += res.avgs[l];
+                });
+            });
+            ['A', 'B', 'C'].forEach(function (l) {
+                avgs[l] = denom ? avgs[l] / denom * 100 : null;
+            });
+            return { avgs: avgs, programmeTotal: 100, overall: true };
+        }
+
+        function rankLetters(avgs) {
+            const list = ['A', 'B', 'C'].filter(function (l) {
+                return avgs[l] != null;
+            });
+            list.sort(function (a, b) {
+                return avgs[b] - avgs[a];
+            });
+            return list;
+        }
+
+        function placeMarqueeLine(word, letter) {
+            const hex = { A: '#F8C025', B: '#E54438', C: '#48A82E' }[letter];
+            const team = SCHOOL_NAMES[letter] || letter;
+            return '<div class="third-marquee-line"><span class="third-marquee-inner"><span class="tm-word">' + word + '&nbsp;&nbsp;-&nbsp;&nbsp;</span><span class="tm-team" style="color:' + (hex || '#000000') + '">' + team + '</span></span></div>';
+        }
+
+        function showTieFirstMarquee() {
+            const bars = getBarEls();
+            if (bars.length < 2) return;
+            const letters = [];
+            for (let k = 0; k < 2 && k < bars.length; k++) {
+                letters.push(bars[k].getAttribute('data-letter'));
+            }
+            letters.sort();
+            const parts = letters.map(function (l) {
+                const hex = { A: '#F8C025', B: '#E54438', C: '#48A82E' }[l];
+                const team = SCHOOL_NAMES[l] || l;
+                return '<span class="tm-team" style="color:' + (hex || '#000000') + '">' + team + '</span>';
+            });
+            const mq = document.getElementById('third-marquee');
+            if (mq) {
+                mq.insertAdjacentHTML('afterbegin',
+                    '<div class="third-marquee-line"><span class="third-marquee-inner"><span class="tm-word">FIRST&nbsp;&nbsp;-&nbsp;&nbsp;</span>' + parts[0] + '<span class="tm-amp">&nbsp;&nbsp;&amp;&nbsp;&nbsp;</span>' + parts[1] + '</span></div>');
+                mq.classList.add('active');
+            }
+        }
+
+        function renderRanks(p, res) {
+            const ranked = rankLetters(res.avgs);
+            let html = '<div class="card">' +
+                '<div class="prog-name">' + p.name + '</div>';
+            if (ranked.length === 0) {
+                html += '<p class="waiting">Waiting for judges to submit marks...</p>';
+            } else {
+                const maxVal = Math.max.apply(null, ranked.map(function (l) { return res.avgs[l] || 0; }));
+                html += '<div class="rank-vchart">';
+                ranked.forEach(function (letter, i) {
+                    const place = i + 1;
+                    const avg = res.avgs[letter] || 0;
+                    const pct = maxVal > 0 ? avg / maxVal * 100 : 0;
+                    html += '<div class="rank-vcol">' +
+                        '<div class="rv-school">' + SCHOOL_NAMES[letter] + '</div>' +
+                        '<div class="rv-bar-track">' +
+                        '<div class="rv-bar bar-' + SCHOOL_COLORS[letter] + '" style="height:' + pct + '%"></div>' +
+                        '</div>' +
+                        '<div class="rv-val">' + avg.toFixed(1) + (res.overall ? '%' : '') + '</div>' +
+                        '<span class="rv-place g' + place + '">' + (place === 1 ? '1st' : place === 2 ? '2nd' : '3rd') + '</span>' +
+                        '</div>';
+                });
+                html += '</div>';
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function getPresent(d) {
+            return d.programmes.filter(function (p) {
+                return d.presentData[p.name] === true;
+            });
+        }
+
+        function computeAllPresent(d) {
+            var present = getPresent(d);
+            var totals = { A: 0, B: 0, C: 0 };
+            var count = 0;
+            present.forEach(function (p) {
+                var res = computeResults(d, p);
+                var has = false;
+                ['A','B','C'].forEach(function (l) {
+                    if (res.avgs[l] != null) has = true;
+                });
+                if (has) {
+                    count++;
+                    ['A','B','C'].forEach(function (l) {
+                        if (res.avgs[l] != null) totals[l] += res.avgs[l];
+                    });
+                }
+            });
+            return { totals: totals, count: count, present: present };
+        }
+
+        function renderOverallPoints(d) {
+            var all = computeAllPresent(d);
+            if (all.present.length === 0) {
+                return '<div class="card"><p class="waiting">No programmes yet</p></div>';
+            }
+            var totals = all.totals;
+            var ranked = ['A','B','C'].filter(function (l) { return totals[l] > 0; });
+            ranked.sort(function (a, b) { return totals[b] - totals[a]; });
+            var maxVal = Math.max.apply(null, ranked.map(function (l) { return totals[l]; })) || 1;
+            var html = '<div class="card"><div class="prog-name">Overall</div>';
+            if (ranked.length === 0) {
+                html += '<p class="waiting">Waiting for judges to submit marks...</p>';
+            } else {
+                html += '<div class="rank-vchart">';
+                ranked.forEach(function (letter, i) {
+                    var place = i + 1;
+                    var val = totals[letter];
+                    var pct = maxVal > 0 ? val / maxVal * 100 : 0;
+                    html += '<div class="rank-vcol">' +
+                        '<div class="rv-school">' + SCHOOL_NAMES[letter] + '</div>' +
+                        '<div class="rv-bar-track">' +
+                        '<div class="rv-bar bar-' + SCHOOL_COLORS[letter] + '" style="height:' + pct + '%"></div>' +
+                        '</div>' +
+                        '<div class="rv-val">' + val.toFixed(1) + '</div>' +
+                        '<span class="rv-place g' + place + '">' + (place === 1 ? '1st' : place === 2 ? '2nd' : '3rd') + '</span>' +
+                        '</div>';
+                });
+                html += '</div>';
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function hasResults(d, p) {
+            const data = d.marksData[p.name] || {};
+            return Object.keys(data).length > 0;
+        }
+
+        function renderSplitBars(p, res, animate) {
+            const ranked = rankLetters(res.avgs);
+            const scale = 100;
+            tieFirst = ranked.length >= 2 && ranked[0] && ranked[1] &&
+                res.avgs[ranked[0]] != null && res.avgs[ranked[1]] != null &&
+                Math.abs(res.avgs[ranked[0]] - res.avgs[ranked[1]]) < 0.001;
+            let html = '';
+            if (ranked.length === 0) {
+                html += '<p class="waiting">Waiting for judges to submit marks...</p>';
+                return html;
+            }
+            const displayOrder = ranked.length === 3 ? [ranked[1], ranked[0], ranked[2]] : ranked;
+            html += '<div class="chart">' +
+                '<div class="third-marquee" id="third-marquee"></div>' +
+                '<div class="bars" id="bars">';
+            displayOrder.forEach(function (letter, i) {
+                const pct = Math.min(100, res.avgs[letter] / scale);
+                html += '<div class="col">' +
+                    '<div class="col-school hidden-school">' + SCHOOL_NAMES[letter] + '</div>' +
+                    '<div class="bar bar-grey' +
+                    (animate ? '' : ' no-anim') + '" data-pct="' + pct + '" data-letter="' + letter + '" style="height:0;"></div>' +
+                    '</div>';
+            });
+            html += '</div></div>';
+            return html;
+        }
+
+        function applyBarHeights(root) {
+            const chartEl = root.querySelector('.chart');
+            const chartH = chartEl ? chartEl.clientHeight : 320;
+            const drawH = Math.max(120, chartH - 70);
+            root.querySelectorAll('#bars .bar').forEach(function (b) {
+                const pct = parseFloat(b.getAttribute('data-pct'));
+                b.style.height = Math.max(4, Math.round(pct * drawH)) + 'px';
+            });
+        }
+
+        const CYCLE = [
+            ['orange', 'blue', 'purple'],
+            ['pink', 'brown', 'orange'],
+            ['blue', 'purple', 'pink'],
+            ['brown', 'orange', 'blue'],
+            ['purple', 'pink', 'brown']
+        ];
+
+        function getBarEls() {
+            return document.querySelectorAll('#bars .bar');
+        }
+
+        function setBarColor(b, color) {
+            b.classList.remove('bar-grey', 'bar-yellow', 'bar-green', 'bar-red', 'bar-orange', 'bar-blue', 'bar-purple', 'bar-pink', 'bar-brown');
+            b.classList.add('bar-' + color);
+        }
+
+        function applyRevealColors() {
+            const bars = getBarEls();
+            if (bars.length === 0) return;
+            if (revealStage === 0) {
+                bars.forEach(function (b) { setBarColor(b, 'grey'); });
+                return;
+            }
+            const cycle = CYCLE[cycleStep % 5];
+            bars.forEach(function (b, i) {
+                if (lockedBars.indexOf(i) !== -1) return;
+                setBarColor(b, cycle[i]);
+            });
+        }
+
+        function lockBarWithColor(i, skipMarquee) {
+            if (lockedBars.indexOf(i) !== -1) return;
+            const el = getBarEls()[i];
+            if (!el) return;
+            const letter = el.getAttribute('data-letter');
+            const color = SCHOOL_COLORS[letter];
+            if (color) setBarColor(el, color);
+            const col = el.closest('.col');
+            const label = col ? col.querySelector('.col-school') : null;
+            if (label) label.classList.remove('hidden-school');
+            const placeWords = { 0: 'SECOND', 1: 'FIRST', 2: 'THIRD' };
+            const word = placeWords[i];
+            if (word && !skipMarquee) {
+                const mq = document.getElementById('third-marquee');
+                if (mq) {
+                    mq.insertAdjacentHTML('afterbegin', placeMarqueeLine(word, letter));
+                    mq.classList.add('active');
+                }
+            }
+            lockedBars.push(i);
+        }
+
+        function startCycle() {
+            clearInterval(cycleInterval);
+            cycleInterval = setInterval(function () {
+                if (revealStage === 0 || revealStage >= 4) {
+                    clearInterval(cycleInterval);
+                    cycleInterval = null;
+                    return;
+                }
+                cycleStep += 1;
+                applyRevealColors();
+            }, 250);
+        }
+
+        function firePopper() {
+            const chart = document.querySelector('.chart');
+            if (!chart) return;
+            const popper = document.createElement('div');
+            popper.className = 'popper';
+            const colors = ['#FFD60A', '#1F9D6B', '#E0505C', '#00B4D8'];
+            for (let k = 0; k < 90; k++) {
+                const span = document.createElement('span');
+                const x = 28 + Math.random() * 44;
+                const dx = (Math.random() * 360 - 180);
+                const rot = (Math.random() * 900 - 450);
+                const d = 1.4 + Math.random() * 1.6;
+                const delay = Math.random() * 0.4;
+                span.style.left = x + '%';
+                span.style.width = (10 + Math.random() * 12) + 'px';
+                span.style.height = (12 + Math.random() * 14) + 'px';
+                span.style.setProperty('--dx', dx + 'px');
+                span.style.setProperty('--r', rot + 'deg');
+                span.style.setProperty('--d', d + 's');
+                span.style.animationDelay = delay + 's';
+                span.style.background = colors[Math.floor(Math.random() * colors.length)];
+                popper.appendChild(span);
+            }
+            chart.appendChild(popper);
+            setTimeout(function () {
+                if (popper.parentNode) popper.parentNode.removeChild(popper);
+            }, 4200);
+        }
+
+        function stopRefresh() {
+            clearInterval(refreshInterval);
+            refreshInterval = null;
+        }
+
+        function startRefresh() {
+            if (!refreshInterval) {
+                refreshInterval = setInterval(render, 3000);
+            }
+        }
+
+        function resetReveal() {
+            revealStage = 0;
+            cycleStep = 0;
+            lockedBars = [];
+            getBarEls().forEach(function (b) {
+                const col = b.closest('.col');
+                const label = col ? col.querySelector('.col-school') : null;
+                if (label) label.classList.add('hidden-school');
+            });
+            const mq = document.getElementById('third-marquee');
+            if (mq) {
+                mq.classList.remove('active');
+                mq.innerHTML = '';
+            }
+            clearInterval(cycleInterval);
+            cycleInterval = null;
+            startRefresh();
+        }
+
+        function advanceReveal() {
+            if (view !== 'bars' || getBarEls().length === 0) return;
+            revealStage = (revealStage + 1) % 5;
+            if (revealStage === 1) {
+                cycleStep = 0;
+                lockedBars = [];
+                stopRefresh();
+                startCycle();
+            } else if (revealStage === 2) {
+                lockBarWithColor(2);
+            } else if (revealStage === 3) {
+                if (tieFirst) {
+                    clearInterval(cycleInterval);
+                    cycleInterval = null;
+                    lockBarWithColor(0, true);
+                    lockBarWithColor(1, true);
+                    showTieFirstMarquee();
+                    firePopper();
+                    if (selectedProgramme && selectedProgramme !== '__OVERALL__') {
+                        if (revealedProgrammes.indexOf(selectedProgramme) === -1) {
+                            revealedProgrammes.push(selectedProgramme);
+                        }
+                    }
+                    revealStage = 4;
+                } else {
+                    lockBarWithColor(0);
+                }
+            } else if (revealStage === 4) {
+                clearInterval(cycleInterval);
+                cycleInterval = null;
+                lockBarWithColor(1);
+                firePopper();
+                if (selectedProgramme && selectedProgramme !== '__OVERALL__') {
+                    if (revealedProgrammes.indexOf(selectedProgramme) === -1) {
+                        revealedProgrammes.push(selectedProgramme);
+                    }
+                }
+            } else {
+                resetReveal();
+            }
+            applyRevealColors();
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                advanceReveal();
+            }
+        });
+
+        function buildSplit(d, animate) {
+            const presentProgrammes = getPresent(d);
+            const withResults = presentProgrammes.filter(function (p) {
+                return hasResults(d, p);
+            });
+            const list = withResults.length ? withResults : presentProgrammes;
+            if (list.length === 0) {
+                return { html: '<p class="waiting">Waiting for results...</p>', animate: false };
+            }
+            if (selectedProgramme !== '__OVERALL__' && (!selectedProgramme || !list.some(function (p) { return p.name === selectedProgramme; }))) {
+                selectedProgramme = list[0].name;
+            }
+            let sel, res;
+            if (selectedProgramme === '__OVERALL__') {
+                sel = { name: 'Overall' };
+                res = computeOverall(d);
+            } else {
+                sel = list.find(function (p) { return p.name === selectedProgramme; });
+                res = computeResults(d, sel);
+            }
+            let html = '<div class="split">' +
+                '<div class="chart-panel">';
+            html += renderSplitBars(sel, res, animate);
+            html += '</div>' +
+                '<div class="control-panel"><h3>Programmes</h3>';
+            html += '<button class="prog-btn' + (selectedProgramme === '__OVERALL__' ? ' active' : '') + '" data-prog="__OVERALL__">Overall</button>';
+            list.forEach(function (p) {
+                html += '<button class="prog-btn' + (p.name === selectedProgramme ? ' active' : '') + '" data-prog="' + p.name + '">' + p.name + '</button>';
+            });
+            html += '</div></div>';
+            return { html: html, animate: animate };
+        }
+
+        function render() {
+            if (view === 'videos' && window.innerWidth >= 768) {
+                loadTeamVideos();
+                return;
+            }
+            syncData(function (d) {
+                renderWith(d);
+            });
+        }
+
+        function renderWith(d) {
+            const presentProgrammes = getPresent(d);
+            const main = document.getElementById('main-area');
+            if (view === 'overall') {
+                main.innerHTML = renderOverallPoints(d);
+                return;
+            }
+            if (view === 'videos') {
+                loadTeamVideos();
+                return;
+            }
+            if (view === 'ranks') {
+                if (window.innerWidth >= 768) {
+                    main.innerHTML = '';
+                    return;
+                }
+                let html = '';
+                if (revealedProgrammes.length > 0) {
+                    const overallRes = computeOverall(d);
+                    if (rankLetters(overallRes.avgs).length > 0) {
+                        html += renderRanks({ name: 'Overall' }, overallRes);
+                    }
+                }
+                presentProgrammes.forEach(function (p) {
+                    const res = computeResults(d, p);
+                    html += renderRanks(p, res);
+                });
+                main.innerHTML = html;
+                return;
+            }
+            if (view === 'bars') {
+                const animate = selectedProgramme !== lastAnimated;
+                const built = buildSplit(d, animate);
+                main.innerHTML = built.html;
+                if (built.animate) {
+                    lastAnimated = selectedProgramme;
+                    requestAnimationFrame(function () {
+                        requestAnimationFrame(function () {
+                            applyBarHeights(main);
+                        });
+                    });
+                } else {
+                    applyBarHeights(main);
+                }
+                main.querySelectorAll('.prog-btn').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        selectedProgramme = btn.getAttribute('data-prog');
+                        lastAnimated = null;
+                        resetReveal();
+                        render();
+                    });
+                });
+            }
+        }
+
+        function formatDate(d) {
+            var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+        }
+
+        var desktopVideoLoaded = false;
+        var activeVideoListener = null;
+        var desktopActiveUrl = null;
+        var soundEnabled = false;
+
+        function setActiveVideo(v) {
+            var main = document.getElementById('main-area');
+            document.querySelector('.top-bar').style.display = 'none';
+            var vid = document.getElementById('desktop-main-video');
+            if (!vid) {
+                main.innerHTML = '<div class="desktop-video-layout">' +
+                    '<video id="desktop-main-video" autoplay playsinline' + (v.promo ? ' loop' : '') + '></video>' +
+                    '</div>';
+                vid = document.getElementById('desktop-main-video');
+                enableSoundOnTap(vid);
+            }
+            vid.loop = !!v.promo;
+            vid.src = v.url;
+            vid.muted = !soundEnabled;
+            vid.play().catch(function () {});
+            startRemoteControl(vid);
+            if (!desktopVideoLoaded) desktopVideoLoaded = true;
+        }
+
+        function startActiveVideoListener() {
+            if (activeVideoListener) return;
+            activeVideoListener = db.collection('videos').where('active', '==', true).limit(1)
+                .onSnapshot(function (snap) {
+                    if (snap.empty) return;
+                    var v = snap.docs[0].data();
+                    if (v.url === desktopActiveUrl) return;
+                    desktopActiveUrl = v.url;
+                    setActiveVideo(v);
+                }, function () {});
+        }
+
+        function loadTeamVideos() {
+            if (window.innerWidth >= 768) {
+                startActiveVideoListener();
+                if (desktopVideoLoaded) return;
+                var main = document.getElementById('main-area');
+                main.innerHTML = '<p class="waiting">Loading videos...</p>';
+                db.collection('videos').where('active', '==', true).limit(1).get()
+                    .then(function (snap) {
+                        if (snap.empty) {
+                            main.innerHTML = '<p class="waiting">No active video</p>';
+                            return;
+                        }
+                        var v = snap.docs[0].data();
+                        desktopActiveUrl = v.url;
+                        setActiveVideo(v);
+                    })
+                    .catch(function () {
+                        main.innerHTML = '<p class="waiting">Failed to load video</p>';
+                    });
+                return;
+            }
+            var main = document.getElementById('main-area');
+            main.innerHTML = '<p class="waiting">Loading videos...</p>';
+            db.collection('videos').orderBy('createdAt', 'desc').get()
+                .then(function (snap) {
+                    if (snap.empty) {
+                        main.innerHTML = '<p class="waiting">No videos uploaded yet</p>';
+                        return;
+                    }
+                    var html = '<div class="video-grid">';
+                    snap.forEach(function (doc) {
+                        if (doc.id === 'remote_control' || doc.id === 'remote_status') return;
+                        var v = doc.data();
+                        var dateStr = v.createdAt ? formatDate(v.createdAt.toDate()) : '';
+                        html += '<div class="video-card" data-url="' + v.url + '">' +
+                            '<video src="' + v.url + '" preload="metadata" muted></video>' +
+                            '<div class="vc-info">' +
+                            '<div class="vc-name">' + v.filename + '</div>' +
+                            '<div class="vc-date">' + dateStr + '</div>' +
+                            '</div></div>';
+                    });
+                    html += '</div>';
+                    main.innerHTML = html;
+                    main.querySelectorAll('.video-card').forEach(function (card) {
+                        card.addEventListener('click', function () {
+                            var url = card.getAttribute('data-url');
+                            document.getElementById('modal-video').src = url;
+                            document.getElementById('video-modal').classList.add('show');
+                        });
+                    });
+                })
+                .catch(function () {
+                    main.innerHTML = '<p class="waiting">Failed to load videos</p>';
+                });
+        }
+
+        var lastControlSeq = Number(localStorage.getItem('otbAudienceSeq') || 0);
+        var controlListenerReady = false;
+        var statusTimer = null;
+        var CONTROL_DOC = 'remote_control';
+        var STATUS_DOC = 'remote_status';
+
+        function enableSoundOnTap(vid) {
+            var done = false;
+            function enable() {
+                if (done) return;
+                done = true;
+                soundEnabled = true;
+                vid.muted = false;
+                vid.volume = 1;
+                vid.play().catch(function () {});
+                document.removeEventListener('pointerdown', enable);
+                document.removeEventListener('keydown', enable);
+            }
+            document.addEventListener('pointerdown', enable);
+            document.addEventListener('keydown', enable);
+        }
+
+        function startRemoteControl(vid) {
+            if (statusTimer) clearInterval(statusTimer);
+            statusTimer = setInterval(function () {
+                try {
+                    db.collection('videos').doc(STATUS_DOC).set({
+                        status: {
+                            currentTime: vid.currentTime || 0,
+                            duration: vid.duration || 0,
+                            playing: !vid.paused && !vid.ended,
+                            muted: !!vid.muted,
+                            name: 'Active video',
+                            ts: firebase.firestore.FieldValue.serverTimestamp()
+                        }
+                    });
+                } catch (e) {}
+            }, 500);
+
+            if (controlListenerReady) return;
+            controlListenerReady = true;
+
+            db.collection('videos').doc(CONTROL_DOC).onSnapshot(function (doc) {
+                if (!doc.exists) return;
+                var d = doc.data();
+                var c = d.control;
+                if (!c) return;
+                if (typeof c.seq === 'number' && c.seq <= lastControlSeq) return;
+                if (typeof c.seq === 'number') {
+                    lastControlSeq = c.seq;
+                    try { localStorage.setItem('otbAudienceSeq', lastControlSeq); } catch (e) {}
+                }
+                var el = document.getElementById('desktop-main-video');
+                if (!el) return;
+                switch (c.action) {
+                    case 'play':
+                        el.muted = !soundEnabled;
+                        el.play().catch(function () {
+                            el.muted = true;
+                            el.play();
+                        });
+                        break;
+                    case 'pause':
+                        el.pause();
+                        break;
+                    case 'stop':
+                        el.pause();
+                        el.currentTime = 0;
+                        break;
+                    case 'restart':
+                        el.currentTime = 0;
+                        el.muted = !soundEnabled;
+                        el.play().catch(function () {
+                            el.muted = true;
+                            el.play();
+                        });
+                        break;
+                    case 'seek':
+                        el.currentTime = Number(c.value) || 0;
+                        break;
+                    case 'seek-relative':
+                        el.currentTime = Math.max(0, Math.min(el.duration || 0, el.currentTime + (Number(c.value) || 0)));
+                        break;
+                    case 'volume':
+                        el.volume = Math.max(0, Math.min(1, Number(c.value) || 0));
+                        el.muted = false;
+                        break;
+                    case 'mute':
+                        el.muted = !el.muted;
+                        break;
+                }
+            }, function () {});
+        }
+
+        document.getElementById('video-modal-close').addEventListener('click', function () {
+            document.getElementById('modal-video').pause();
+            document.getElementById('modal-video').src = '';
+            document.getElementById('video-modal').classList.remove('show');
+        });
+
+        document.getElementById('video-modal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                document.getElementById('modal-video').pause();
+                document.getElementById('modal-video').src = '';
+                this.classList.remove('show');
+            }
+        });
+
+        document.getElementById('hamburger').addEventListener('click', function () {
+            view = view === 'ranks' ? 'bars' : 'ranks';
+            resetReveal();
+            render();
+        });
+
+        document.getElementById('desk-results').addEventListener('click', function () {
+            view = 'videos';
+            desktopVideoLoaded = false;
+            resetReveal();
+            document.getElementById('desk-results').classList.add('active');
+            document.getElementById('desk-videos').classList.remove('active');
+            document.querySelector('.top-bar').style.display = 'none';
+            render();
+        });
+
+        document.getElementById('desk-videos').addEventListener('click', function () {
+            view = 'bars';
+            desktopVideoLoaded = false;
+            resetReveal();
+            document.getElementById('desk-videos').classList.add('active');
+            document.getElementById('desk-results').classList.remove('active');
+            document.querySelector('.top-bar').style.display = '';
+            render();
+        });
+
+        function setActiveNav(id) {
+            document.querySelectorAll('.mobile-bottom-nav a').forEach(function (a) { a.classList.remove('active'); });
+            document.getElementById(id).classList.add('active');
+        }
+
+        function showNavLoader(callback) {
+            var loader = document.getElementById('nav-loader');
+            loader.classList.add('show');
+            setTimeout(function () {
+                loader.classList.remove('show');
+                if (callback) callback();
+            }, 500);
+        }
+
+        document.getElementById('nav-ranks').addEventListener('click', function (e) {
+            e.preventDefault();
+            setActiveNav('nav-ranks');
+            showNavLoader(function () {
+                view = 'ranks';
+                selectedProgramme = null;
+                resetReveal();
+                render();
+            });
+        });
+
+        document.getElementById('nav-overall').addEventListener('click', function (e) {
+            e.preventDefault();
+            setActiveNav('nav-overall');
+            showNavLoader(function () {
+                view = 'overall';
+                resetReveal();
+                render();
+            });
+        });
+
+        render();
+        refreshInterval = setInterval(render, 3000);
+
+        var currentActiveVideoUrl = null;
+        var videoPlayer = document.getElementById('audience-video');
+        var videoWrap = document.getElementById('video-player-wrap');
+        var videoLoading = document.getElementById('video-loading');
+
+        function checkActiveVideo() {
+            if (window.innerWidth >= 768) return;
+            db.collection('videos').where('active', '==', true).limit(1).get()
+                .then(function (snap) {
+                    if (snap.empty) {
+                        videoWrap.className = 'video-player-wrap no-video';
+                        currentActiveVideoUrl = null;
+                        return;
+                    }
+                    var doc = snap.docs[0].data();
+                    var newUrl = doc.url;
+                    if (newUrl !== currentActiveVideoUrl) {
+                        currentActiveVideoUrl = newUrl;
+                        videoWrap.className = 'video-player-wrap';
+                        videoLoading.style.display = 'block';
+                        videoPlayer.style.display = 'none';
+                        videoPlayer.src = newUrl;
+                        videoPlayer.onloadeddata = function () {
+                            videoLoading.style.display = 'none';
+                            videoPlayer.style.display = 'block';
+                        };
+                        videoPlayer.onerror = function () {
+                            videoLoading.textContent = 'Error loading video';
+                        };
+                    }
+                })
+                .catch(function () {
+                    videoWrap.className = 'video-player-wrap no-video';
+                    currentActiveVideoUrl = null;
+                });
+        }
+
+        checkActiveVideo();
+        setInterval(checkActiveVideo, 5000);
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === '8' && window.innerWidth >= 768) {
+                if (view === 'videos') {
+                    view = 'bars';
+                    desktopVideoLoaded = false;
+                    document.getElementById('desk-videos').classList.add('active');
+                    document.getElementById('desk-results').classList.remove('active');
+                    document.querySelector('.top-bar').style.display = '';
+                    render();
+                } else {
+                    view = 'videos';
+                    desktopVideoLoaded = false;
+                    document.getElementById('desk-results').classList.add('active');
+                    document.getElementById('desk-videos').classList.remove('active');
+                    document.querySelector('.top-bar').style.display = 'none';
+                    render();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

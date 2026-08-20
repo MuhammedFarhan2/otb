@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Videos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #EAF9FD;
+            color: #111827;
+            min-height: 100vh;
+            padding-top: 60px;
+        }
+        .top-bar {
+            background-color: #023047;
+            padding: 25px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+        }
+        .top-nav {
+            display: none;
+            justify-content: center;
+            gap: 10px;
+        }
+        .top-nav a {
+            color: #FFFFFF;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #FFFFFF;
+            border-radius: 8px;
+        }
+        .top-nav a:hover,
+        .top-nav a.active {
+            background-color: #FFFFFF;
+            color: #000000;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background-color: #FFFFFF;
+            border-top: 2px solid #000000;
+            z-index: 100;
+        }
+        .bottom-nav a {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            color: #111827;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        .bottom-nav a:hover,
+        .bottom-nav a.active {
+            background-color: #000000;
+            color: #FFFFFF;
+        }
+        .bottom-nav svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+        @media (min-width: 768px) {
+            .top-nav {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+            .top-nav a {
+                padding: 4px 16px;
+                font-size: 15px;
+            }
+            .top-bar {
+                padding: 14px 20px;
+            }
+            .bottom-nav {
+                display: none;
+            }
+        }
+        @media (max-width: 767px) {
+            body {
+                padding-top: 50px;
+                padding-bottom: 90px;
+            }
+        }
+        .content {
+            padding: 16px 10px;
+        }
+        .upload-box {
+            background-color: #FFFFFF;
+            border: 2px solid #023047;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+        .upload-box h2 {
+            color: #023047;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .video-choose-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: #023047;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+        .video-choose-btn:hover {
+            background-color: #0096C7;
+        }
+        .video-selected {
+            display: none;
+            background-color: #EAF9FD;
+            border: 2px solid #CAF0F8;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+        .video-selected.show {
+            display: block;
+        }
+        .video-selected .vs-name {
+            font-size: 15px;
+            font-weight: bold;
+            color: #023047;
+            margin-bottom: 4px;
+        }
+        .video-selected .vs-size {
+            font-size: 13px;
+            color: #667085;
+            margin-bottom: 10px;
+        }
+        .video-selected video {
+            width: 100%;
+            max-height: 250px;
+            border-radius: 8px;
+            background: #000;
+            margin-bottom: 12px;
+        }
+        .video-upload-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: #FFD60A;
+            color: #111827;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .video-upload-btn:hover {
+            background-color: #e6c009;
+        }
+        .video-upload-btn:disabled {
+            background-color: #C9D2D9;
+            color: #667085;
+            cursor: not-allowed;
+        }
+        .video-progress-wrap {
+            display: none;
+            margin-top: 12px;
+        }
+        .video-progress-wrap.show {
+            display: block;
+        }
+        .video-progress-bar {
+            width: 100%;
+            height: 24px;
+            background-color: #E7ECEF;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        .video-progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #1F9D6B;
+            border-radius: 12px;
+            transition: width 0.3s ease;
+        }
+        .video-progress-text {
+            font-size: 13px;
+            color: #023047;
+            font-weight: bold;
+            text-align: center;
+        }
+        .video-msg {
+            display: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 12px;
+            text-align: center;
+        }
+        .video-msg.show {
+            display: block;
+        }
+        .video-msg.success {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+        .video-msg.error {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+        .video-list {
+            background-color: #FFFFFF;
+            border: 2px solid #023047;
+            border-radius: 16px;
+            padding: 18px;
+        }
+        .video-list h2 {
+            color: #023047;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .video-list-empty {
+            text-align: center;
+            color: #667085;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 20px;
+        }
+        .video-item {
+            background-color: #CAF0F8;
+            border: 2px solid #023047;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+        .video-item:last-child {
+            margin-bottom: 0;
+        }
+        .video-item.active {
+            border-color: #1F9D6B;
+            border-width: 3px;
+        }
+        .video-item video {
+            width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            background: #000;
+            margin-bottom: 10px;
+        }
+        .video-item .vi-info {
+            margin-bottom: 10px;
+        }
+        .video-item .vi-name {
+            font-size: 15px;
+            font-weight: bold;
+            color: #023047;
+            margin-bottom: 4px;
+        }
+        .video-item .vi-meta {
+            font-size: 13px;
+            color: #667085;
+        }
+        .video-item .vi-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .vi-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+        .vi-btn-activate {
+            background-color: #1F9D6B;
+            color: #FFFFFF;
+        }
+        .vi-btn-activate:hover {
+            background-color: #178a5b;
+        }
+        .vi-btn-active-tag {
+            background-color: #1F9D6B;
+            color: #FFFFFF;
+            cursor: default;
+        }
+        .vi-btn-delete {
+            background-color: #E0505C;
+            color: #FFFFFF;
+        }
+        .vi-btn-delete:hover {
+            background-color: #c7444f;
+        }
+        .active-badge {
+            display: inline-block;
+            background-color: #1F9D6B;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <nav class="top-nav">
+            <a href="admin home.html">Home</a>
+            <a href="videos.html" class="active">Videos</a>
+            <a href="remote.html">Remote</a>
+            <a href="lock.html">Lock</a>
+            <a href="marks.html">Marks</a>
+        </nav>
+    </div>
+    <div class="content">
+        <div class="upload-box">
+            <h2>Upload New Video</h2>
+            <button class="video-choose-btn" id="video-choose-btn">Choose Video</button>
+            <input type="file" id="video-file-input" accept="video/mp4,video/webm,video/quicktime" style="display:none">
+            <div class="video-selected" id="video-selected">
+                <p class="vs-name" id="vs-name"></p>
+                <p class="vs-size" id="vs-size"></p>
+                <video id="video-preview" controls></video>
+                <input type="text" id="video-name-input" placeholder="Enter video name" style="width:100%;padding:12px;border:2px solid #023047;border-radius:10px;font-size:16px;font-weight:bold;margin-bottom:10px;font-family:Arial,sans-serif;">
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:12px;">
+                    <input type="checkbox" id="promo-switch" style="width:20px;height:20px;cursor:pointer;">
+                    <span style="font-size:15px;font-weight:bold;color:#023047;">Promo Video (plays on loop continuously)</span>
+                </label>
+                <button class="video-upload-btn" id="video-upload-btn" disabled>Upload Video</button>
+            </div>
+            <div class="video-progress-wrap" id="video-progress-wrap">
+                <div class="video-progress-bar">
+                    <div class="video-progress-fill" id="video-progress-fill"></div>
+                </div>
+                <p class="video-progress-text" id="video-progress-text">Uploading... 0%</p>
+            </div>
+            <div class="video-msg" id="video-msg"></div>
+        </div>
+        <div class="video-list" id="video-list">
+            <h2>All Videos</h2>
+            <div id="video-list-items">
+                <p class="video-list-empty">Loading videos...</p>
+            </div>
+        </div>
+    </div>
+    <nav class="bottom-nav">
+        <a href="admin home.html">
+            <svg viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="videos.html" class="active">
+            <svg viewBox="0 0 24 24">
+                <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path>
+            </svg>
+            <span>Videos</span>
+        </a>
+        <a href="remote.html">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+            </svg>
+            <span>Remote</span>
+        </a>
+        <a href="lock.html">
+            <svg viewBox="0 0 24 24">
+                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"></path>
+            </svg>
+            <span>Lock</span>
+        </a>
+        <a href="marks.html">
+            <svg viewBox="0 0 24 24">
+                <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"></path>
+            </svg>
+            <span>Marks</span>
+        </a>
+    </nav>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        var MAX_SIZE = 125 * 1024 * 1024;
+        var ALLOWED_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
+
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function formatDate(d) {
+            var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear() + ', ' +
+                String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+        }
+
+        function showVideoMsg(text, type) {
+            var el = document.getElementById('video-msg');
+            el.textContent = text;
+            el.className = 'video-msg show ' + type;
+        }
+
+        function hideVideoMsg() {
+            document.getElementById('video-msg').className = 'video-msg';
+        }
+
+        var selectedFile = null;
+
+        document.getElementById('video-choose-btn').addEventListener('click', function () {
+            document.getElementById('video-file-input').click();
+        });
+
+        document.getElementById('video-file-input').addEventListener('change', function (e) {
+            hideVideoMsg();
+            var file = e.target.files[0];
+            if (!file) return;
+
+            if (ALLOWED_TYPES.indexOf(file.type) === -1) {
+                showVideoMsg('Invalid file type. Please select MP4, WebM, or MOV.', 'error');
+                return;
+            }
+            if (file.size > MAX_SIZE) {
+                showVideoMsg('File is too large. Maximum size is 125 MB.', 'error');
+                return;
+            }
+
+            selectedFile = file;
+            document.getElementById('vs-name').textContent = file.name;
+            document.getElementById('vs-size').textContent = formatSize(file.size);
+
+            var preview = document.getElementById('video-preview');
+            preview.src = URL.createObjectURL(file);
+
+            document.getElementById('video-selected').className = 'video-selected show';
+            checkUploadReady();
+        });
+
+        document.getElementById('video-name-input').addEventListener('input', function () {
+            checkUploadReady();
+        });
+
+        function checkUploadReady() {
+            var name = document.getElementById('video-name-input').value.trim();
+            document.getElementById('video-upload-btn').disabled = !(selectedFile && name);
+        }
+
+        document.getElementById('video-upload-btn').addEventListener('click', function () {
+            if (!selectedFile) return;
+            var videoName = document.getElementById('video-name-input').value.trim();
+            if (!videoName) return;
+            var btn = document.getElementById('video-upload-btn');
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+
+            document.getElementById('video-progress-wrap').className = 'video-progress-wrap show';
+            document.getElementById('video-progress-fill').style.width = '0%';
+            document.getElementById('video-progress-text').textContent = 'Uploading... 0%';
+            hideVideoMsg();
+
+            var formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            formData.append('resource_type', 'video');
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD_NAME + '/video/upload');
+
+            xhr.upload.addEventListener('progress', function (e) {
+                if (e.lengthComputable) {
+                    var pct = Math.round((e.loaded / e.total) * 100);
+                    document.getElementById('video-progress-fill').style.width = pct + '%';
+                    document.getElementById('video-progress-text').textContent = 'Uploading... ' + pct + '%';
+                }
+            });
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    var resp = JSON.parse(xhr.responseText);
+                    var url = resp.secure_url;
+
+                    var isPromo = document.getElementById('promo-switch').checked;
+                    db.collection('videos').add({
+                        url: url,
+                        filename: selectedFile.name,
+                        videoName: videoName,
+                        size: selectedFile.size,
+                        mimeType: selectedFile.type,
+                        active: false,
+                        promo: isPromo,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(function () {
+                        showVideoMsg('Video uploaded successfully!', 'success');
+                        btn.disabled = false;
+                        btn.textContent = 'Upload Video';
+                        document.getElementById('video-progress-wrap').className = 'video-progress-wrap';
+                        document.getElementById('video-selected').className = 'video-selected';
+                        document.getElementById('video-file-input').value = '';
+                        document.getElementById('video-name-input').value = '';
+                        document.getElementById('promo-switch').checked = false;
+                        selectedFile = null;
+                        loadVideos();
+                    }).catch(function (err) {
+                        showVideoMsg('Failed to save to database: ' + err.message, 'error');
+                        btn.disabled = false;
+                        btn.textContent = 'Upload Video';
+                    });
+                } else {
+                    var err = JSON.parse(xhr.responseText);
+                    showVideoMsg('Upload failed: ' + (err.error ? err.error.message : 'Unknown error'), 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Upload Video';
+                    document.getElementById('video-progress-wrap').className = 'video-progress-wrap';
+                }
+            };
+
+            xhr.onerror = function () {
+                showVideoMsg('Upload failed. Check your internet connection.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Upload Video';
+                document.getElementById('video-progress-wrap').className = 'video-progress-wrap';
+            };
+
+            xhr.send(formData);
+        });
+
+        function activateVideo(docId) {
+            var batch = db.batch();
+            db.collection('videos').where('active', '==', true).get().then(function (snap) {
+                snap.forEach(function (doc) {
+                    batch.update(doc.ref, { active: false });
+                });
+                batch.update(db.collection('videos').doc(docId), { active: true });
+                batch.commit().then(function () {
+                    loadVideos();
+                });
+            });
+        }
+
+        function deactivateVideo(docId) {
+            db.collection('videos').doc(docId).update({ active: false }).then(function () {
+                loadVideos();
+            });
+        }
+
+        function deleteVideo(docId) {
+            if (!confirm('Delete this video?')) return;
+            db.collection('videos').doc(docId).delete().then(function () {
+                loadVideos();
+            });
+        }
+
+        function loadVideos() {
+            var container = document.getElementById('video-list-items');
+            container.innerHTML = '<p class="video-list-empty">Loading videos...</p>';
+
+            db.collection('videos').orderBy('createdAt', 'desc').get()
+                .then(function (snap) {
+                    if (snap.empty) {
+                        container.innerHTML = '<p class="video-list-empty">No videos uploaded yet</p>';
+                        return;
+                    }
+                    var html = '';
+                    snap.forEach(function (doc) {
+                        if (doc.id === 'remote_control' || doc.id === 'remote_status') return;
+                        var v = doc.data();
+                        var dateStr = v.createdAt ? formatDate(v.createdAt.toDate()) : '';
+                        var activeClass = v.active ? ' active' : '';
+                        html += '<div class="video-item' + activeClass + '">';
+                        if (v.active) {
+                            html += '<span class="active-badge">ACTIVE</span>';
+                        }
+                        if (v.promo) {
+                            html += '<span class="active-badge" style="background-color:#FFD60A;color:#023047;margin-left:6px;">PROMO</span>';
+                        }
+                        html += '<video src="' + v.url + '" preload="metadata" controls></video>';
+                        html += '<div class="vi-info">';
+                        html += '<div class="vi-name">' + (v.videoName || v.filename) + '</div>';
+                        html += '<div class="vi-meta">' + formatSize(v.size) + ' &middot; ' + dateStr + '</div>';
+                        html += '</div>';
+                        html += '<div class="vi-actions">';
+                        if (v.active) {
+                            html += '<button class="vi-btn vi-btn-active-tag">Active</button>';
+                            html += '<button class="vi-btn vi-btn-delete" onclick="deactivateVideo(\'' + doc.id + '\')">Deactivate</button>';
+                        } else {
+                            html += '<button class="vi-btn vi-btn-activate" onclick="activateVideo(\'' + doc.id + '\')">Activate</button>';
+                            html += '<button class="vi-btn vi-btn-delete" onclick="deleteVideo(\'' + doc.id + '\')">Delete</button>';
+                        }
+                        html += '</div>';
+                        html += '</div>';
+                    });
+                    container.innerHTML = html;
+                })
+                .catch(function () {
+                    container.innerHTML = '<p class="video-list-empty">Failed to load videos</p>';
+                });
+        }
+
+        loadVideos();
+    </script>
+</body>
+</html>

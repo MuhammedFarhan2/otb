@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programme</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #EAF9FD;
+            min-height: 100vh;
+        }
+        .top-bar {
+            background-color: #023047;
+            padding: 25px 20px;
+        }
+        .bg-area {
+            position: relative;
+            background-image: url("ChatGPT Image Aug 13, 2026, 01_31_52 PM.png");
+            background-size: 105% auto;
+            background-position: center top;
+            background-repeat: no-repeat;
+            min-height: calc(100vh - 50px);
+        }
+        .programme-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 92%;
+            max-width: 560px;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 28px 24px;
+            min-height: 85vh;
+            box-shadow: 0 8px 24px rgba(2, 48, 71, 0.25);
+        }
+        .programme-name {
+            color: #111827;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 28px;
+            margin-bottom: 16px;
+        }
+        .code-letter-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 12px;
+        }
+        .judge-email {
+            text-align: center;
+            color: #667085;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .code-letter-label {
+            color: #111827;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .letter {
+            color: #00B4D8;
+            font-size: 34px;
+            font-weight: bold;
+        }
+        .btn-submit {
+            display: block;
+            margin: 26px auto 0;
+            padding: 12px 56px;
+            background-color: #FFD60A;
+            color: #111827;
+            border: 2px solid #FF8C00;
+            border-radius: 999px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(2, 48, 71, 0.25);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn-submit:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 14px rgba(2, 48, 71, 0.35);
+        }
+        .criteria-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 40px;
+        }
+        .criteria-table th {
+            background-color: #023047;
+            color: #FFFFFF;
+            padding: 10px;
+            text-align: left;
+            border-right: 2px solid #FFFFFF;
+        }
+        .criteria-table th:last-child {
+            border-right: none;
+        }
+        .criteria-table th.marks-col {
+            text-align: center;
+            width: 25%;
+        }
+        .criteria-table th.judge-col {
+            text-align: center;
+            width: 25%;
+        }
+        .criteria-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #D9EAF2;
+            border-right: 2px solid #FFFFFF;
+            color: #111827;
+            font-size: 16px;
+        }
+        .criteria-table td:last-child {
+            border-right: none;
+        }
+        .criteria-table td.marks-col {
+            text-align: center;
+            font-weight: bold;
+        }
+        .criteria-table td.judge-col {
+            text-align: center;
+        }
+        .judge-input {
+            width: 72%;
+            max-width: 100px;
+            padding: 7px 4px;
+            text-align: center;
+            border: 2px solid #023047;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #111827;
+            background-color: #FFFFFF;
+        }
+        .judge-input::placeholder {
+            color: #9CA3AF;
+        }
+        .judge-input.invalid {
+            border-color: #E0505C;
+            background-color: #FFF5F5;
+        }
+        .criteria-table tr:nth-child(even) td {
+            background-color: #F7FBFF;
+        }
+        .criteria-table tr.total td {
+            background-color: #FFD60A;
+            font-weight: bold;
+            border-bottom: none;
+        }
+        .no-criteria {
+            color: #667085;
+            text-align: center;
+            padding: 20px;
+        }
+        @media (min-width: 768px) {
+            .top-bar {
+                padding: 24px 20px;
+            }
+            .bg-area {
+                background-image: url("ChatGPT Image Aug 13, 2026, 12_59_41 PM.png");
+                background-position: center bottom;
+                min-height: calc(100vh - 48px);
+            }
+            .programme-center {
+                max-width: 780px;
+            }
+            .card {
+                min-height: 72vh;
+                padding: 32px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar"></div>
+    <div class="bg-area">
+        <div class="programme-center">
+            <div class="card">
+                <div id="judge-email" class="judge-email"></div>
+                <div class="code-letter-line">
+                    <span class="code-letter-label">Code Letter</span>
+                    <span class="letter active" id="current-letter">A</span>
+                </div>
+                <div id="programme-name" class="programme-name"></div>
+                <div id="criteria-table-container"></div>
+                <button id="submit-marks" class="btn-submit">SUBMIT</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var allowLeave = false;
+            history.pushState({ page: 'programme' }, '', location.href);
+            window.addEventListener('popstate', function () {
+                history.pushState({ page: 'programme' }, '', location.href);
+            });
+            window.addEventListener('beforeunload', function (e) {
+                if (allowLeave || !window.__judgeLockActive) return;
+                e.preventDefault();
+                e.returnValue = '';
+            });
+            window.__allowLeave = function () { allowLeave = true; };
+        })();
+
+        const programmes = JSON.parse(localStorage.getItem('programmes') || '[]');
+        const locked = programmes.find(function (p) {
+            return p.locked;
+        });
+        const nameEl = document.getElementById('programme-name');
+        const container = document.getElementById('criteria-table-container');
+        const judgeEmailEl = document.getElementById('judge-email');
+
+        const letters = ['A', 'B', 'C'];
+        const letterEl = document.getElementById('current-letter');
+        const judgeEmail = localStorage.getItem('judgeEmail') || '';
+        judgeEmailEl.textContent = 'Logged in as: ' + judgeEmail;
+
+        let currentLetter = 0;
+        if (locked) {
+            const savedMarks = JSON.parse(localStorage.getItem('marks') || '{}');
+            const myData = (savedMarks[locked.name] && savedMarks[locked.name][judgeEmail]) || {};
+            while (currentLetter < letters.length && myData[letters[currentLetter]]) {
+                currentLetter += 1;
+            }
+        }
+
+        function renderLetter() {
+            letterEl.textContent = letters[currentLetter];
+            letterEl.classList.add('active');
+        }
+
+        if (locked && currentLetter >= letters.length) {
+            window.location.href = 'completed.html';
+        }
+
+        const presentCheck = JSON.parse(localStorage.getItem('present') || '{}');
+        if (locked && presentCheck[locked.name]) {
+            window.location.href = 'rejected.html';
+        }
+
+        document.getElementById('submit-marks').addEventListener('click', function () {
+            if (!locked) return;
+            const presentNow = JSON.parse(localStorage.getItem('present') || '{}');
+            if (presentNow[locked.name]) {
+                window.__allowLeave();
+                window.location.href = 'rejected.html';
+                return;
+            }
+            window.__judgeLockActive = true;
+            const rows = [];
+            let sum = 0;
+            let hasInvalid = false;
+            document.querySelectorAll('.judge-input').forEach(function (inp) {
+                inp._touched = true;
+                const max = Number(inp.getAttribute('data-max')) || 0;
+                const v = parseFloat(inp.value);
+                if (inp.value.trim() === '' || isNaN(v) || !Number.isInteger(v) || v < 0 || v > max) {
+                    inp.classList.add('invalid');
+                    hasInvalid = true;
+                    return;
+                }
+                inp.classList.remove('invalid');
+                rows.push(v);
+                sum += v;
+            });
+            if (hasInvalid) return;
+            const marksData = JSON.parse(localStorage.getItem('marks') || '{}');
+            if (!marksData[locked.name]) marksData[locked.name] = {};
+            if (!marksData[locked.name][judgeEmail]) marksData[locked.name][judgeEmail] = {};
+            marksData[locked.name][judgeEmail][letters[currentLetter]] = { total: sum, rows: rows };
+            localStorage.setItem('marks', JSON.stringify(marksData));
+
+            if (currentLetter >= letters.length - 1) {
+                window.__allowLeave();
+                window.location.href = 'completed.html';
+                return;
+            }
+            currentLetter += 1;
+            renderLetter();
+            document.querySelectorAll('.judge-input').forEach(function (inp) {
+                inp.value = '';
+            });
+            const judgeTotal = document.getElementById('judge-total');
+            if (judgeTotal) judgeTotal.textContent = '0';
+        });
+
+        renderLetter();
+
+        if (!locked) {
+            nameEl.textContent = 'No programme selected';
+            container.innerHTML = '<p class="no-criteria">Please lock a programme first.</p>';
+        } else {
+            nameEl.textContent = locked.name;
+            const criteria = locked.criteria || [];
+            if (criteria.length === 0) {
+                container.innerHTML = '<p class="no-criteria">No criteria added for this programme yet.</p>';
+            } else {
+                let html = '<table class="criteria-table">' +
+                    '<tr><th>Criteria</th><th class="marks-col">Total Marks</th><th class="judge-col">Marks</th></tr>';
+                let total = 0;
+                criteria.forEach(function (c) {
+                    const marks = Number(c.marks) || 0;
+                    total += marks;
+                    html += '<tr><td>' + c.agenda + '</td>' +
+                        '<td class="marks-col">' + marks + '</td>' +
+                        '<td class="judge-col"><input class="judge-input" type="number" min="0" max="' + marks + '" data-max="' + marks + '" placeholder="-"></td></tr>';
+                });
+                html += '<tr class="total"><td>Total</td>' +
+                    '<td class="marks-col">' + total + '</td>' +
+                    '<td class="judge-col" id="judge-total">0</td></tr>';
+                html += '</table>';
+                container.innerHTML = html;
+
+                container.addEventListener('input', function (e) {
+                    window.__judgeLockActive = true;
+                    if (e.target && e.target.classList && e.target.classList.contains('judge-input')) {
+                        e.target._touched = true;
+                    }
+                    let sum = 0;
+                    container.querySelectorAll('.judge-input').forEach(function (inp) {
+                        if (!inp._touched) return;
+                        const max = Number(inp.getAttribute('data-max')) || 0;
+                        const v = parseFloat(inp.value);
+                        if (inp.value.trim() === '' || isNaN(v) || !Number.isInteger(v) || v < 0 || v > max) {
+                            inp.classList.add('invalid');
+                            return;
+                        }
+                        inp.classList.remove('invalid');
+                        sum += v;
+                    });
+                    document.getElementById('judge-total').textContent = sum;
+                });
+            }
+        }
+    </script>
+</body>
+</html>

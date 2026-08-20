@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #EAF9FD;
+            color: #111827;
+            min-height: 100vh;
+            padding-top: 60px;
+        }
+        .top-bar {
+            background-color: #023047;
+            padding: 25px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+        }
+        .top-nav {
+            display: none;
+            justify-content: center;
+            gap: 10px;
+        }
+        .top-nav a {
+            color: #FFFFFF;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #FFFFFF;
+            border-radius: 8px;
+        }
+        .top-nav a:hover,
+        .top-nav a.active {
+            background-color: #FFFFFF;
+            color: #000000;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background-color: #FFFFFF;
+            border-top: 2px solid #000000;
+            z-index: 100;
+        }
+        .bottom-nav a {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            color: #111827;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        .bottom-nav a:hover,
+        .bottom-nav a.active {
+            background-color: #000000;
+            color: #FFFFFF;
+        }
+        .bottom-nav svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+        @media (min-width: 768px) {
+            .top-nav {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+            .top-nav a {
+                padding: 4px 16px;
+                font-size: 15px;
+            }
+            .top-bar {
+                padding: 14px 20px;
+            }
+            .bottom-nav {
+                display: none;
+            }
+        }
+        @media (max-width: 767px) {
+            body {
+                padding-top: 50px;
+                padding-bottom: 90px;
+            }
+        }
+        .content {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 16px 12px;
+        }
+        .remote-card {
+            background-color: #FFFFFF;
+            border: 2px solid #023047;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .remote-card h2 {
+            color: #023047;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .remote-status {
+            text-align: center;
+            color: #667085;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        .remote-status.on {
+            color: #1F9D6B;
+        }
+        .remote-status.off {
+            color: #E0505C;
+        }
+        .video-info {
+            background-color: #EAF9FD;
+            border: 2px solid #CAF0F8;
+            border-radius: 10px;
+            padding: 10px 12px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .video-info .vi-name {
+            font-size: 15px;
+            font-weight: bold;
+            color: #023047;
+            word-break: break-word;
+        }
+        .video-info .vi-time {
+            font-size: 13px;
+            color: #667085;
+            margin-top: 4px;
+        }
+        .timeline-wrap {
+            margin-bottom: 16px;
+        }
+        .timeline-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: bold;
+            color: #023047;
+            margin-bottom: 6px;
+        }
+        .timeline {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #CAF0F8;
+            outline: none;
+            cursor: pointer;
+        }
+        .timeline::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #023047;
+            border: 3px solid #FFFFFF;
+            cursor: pointer;
+        }
+        .timeline::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #023047;
+            border: 3px solid #FFFFFF;
+            cursor: pointer;
+        }
+        .transport-btns {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+        .t-btn {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            border: 2px solid #023047;
+            background-color: #FFFFFF;
+            color: #023047;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .t-btn:hover {
+            background-color: #023047;
+            color: #FFFFFF;
+        }
+        .t-btn.play {
+            width: 78px;
+            height: 78px;
+            font-size: 28px;
+            background-color: #023047;
+            color: #FFFFFF;
+        }
+        .t-btn.play:hover {
+            background-color: #0096C7;
+            border-color: #0096C7;
+        }
+        .t-btn.small {
+            width: 48px;
+            height: 48px;
+            font-size: 17px;
+        }
+        .t-btn.active-state {
+            background-color: #FFD60A;
+            color: #111827;
+            border-color: #111827;
+        }
+        .volume-wrap {
+            margin-bottom: 16px;
+        }
+        .volume-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .volume-row .vol-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #023047;
+            min-width: 34px;
+        }
+        .volume {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #CAF0F8;
+            outline: none;
+            cursor: pointer;
+        }
+        .volume::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #023047;
+            border: 3px solid #FFFFFF;
+            cursor: pointer;
+        }
+        .volume::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #023047;
+            border: 3px solid #FFFFFF;
+            cursor: pointer;
+        }
+        .aux-btns {
+            display: flex;
+            gap: 10px;
+        }
+        .aux-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #023047;
+            border-radius: 10px;
+            background-color: #FFFFFF;
+            color: #023047;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .aux-btn:hover {
+            background-color: #023047;
+            color: #FFFFFF;
+        }
+        .aux-btn.danger {
+            border-color: #E0505C;
+            color: #E0505C;
+        }
+        .aux-btn.danger:hover {
+            background-color: #E0505C;
+            color: #FFFFFF;
+        }
+        .remote-msg {
+            display: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 12px;
+            text-align: center;
+        }
+        .remote-msg.show {
+            display: block;
+        }
+        .remote-msg.success {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+        .remote-msg.error {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <nav class="top-nav">
+            <a href="admin home.html">Home</a>
+            <a href="videos.html">Videos</a>
+            <a href="remote.html" class="active">Remote</a>
+            <a href="lock.html">Lock</a>
+            <a href="marks.html">Marks</a>
+        </nav>
+    </div>
+    <div class="content">
+        <div class="remote-card">
+            <h2>Video Remote</h2>
+            <p class="remote-status" id="remote-status">Connecting...</p>
+            <div class="video-info" id="video-info" style="display:none;">
+                <div class="vi-name" id="vi-name"></div>
+                <div class="vi-time" id="vi-time"></div>
+            </div>
+            <div class="timeline-wrap">
+                <div class="timeline-label">
+                    <span id="tl-current">0:00</span>
+                    <span id="tl-duration">0:00</span>
+                </div>
+                <input type="range" class="timeline" id="timeline" min="0" max="1000" value="0">
+            </div>
+            <div class="transport-btns">
+                <button class="t-btn" id="btn-back" title="Back 10s">-10</button>
+                <button class="t-btn play" id="btn-play" title="Play / Pause">▶</button>
+                <button class="t-btn" id="btn-fwd" title="Forward 10s">+10</button>
+            </div>
+            <div class="volume-wrap">
+                <div class="volume-row">
+                    <span class="vol-label">🔊</span>
+                    <input type="range" class="volume" id="volume" min="0" max="100" value="100">
+                </div>
+            </div>
+            <div class="aux-btns">
+                <button class="aux-btn" id="btn-mute">Mute</button>
+                <button class="aux-btn" id="btn-stop">Stop</button>
+                <button class="aux-btn danger" id="btn-restart">Restart</button>
+            </div>
+            <div class="remote-msg" id="remote-msg"></div>
+        </div>
+    </div>
+    <nav class="bottom-nav">
+        <a href="admin home.html">
+            <svg viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="videos.html">
+            <svg viewBox="0 0 24 24">
+                <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path>
+            </svg>
+            <span>Videos</span>
+        </a>
+        <a href="remote.html" class="active">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+            </svg>
+            <span>Remote</span>
+        </a>
+        <a href="lock.html">
+            <svg viewBox="0 0 24 24">
+                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"></path>
+            </svg>
+            <span>Lock</span>
+        </a>
+        <a href="marks.html">
+            <svg viewBox="0 0 24 24">
+                <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"></path>
+            </svg>
+            <span>Marks</span>
+        </a>
+    </nav>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        var CONTROL_DOC = 'remote_control';
+        var STATUS_DOC = 'remote_status';
+        var commandSeq = Number(localStorage.getItem('otbRemoteSeq') || 0);
+
+        function initCommandSeq() {
+            return db.collection('videos').doc(CONTROL_DOC).get()
+                .then(function (doc) {
+                    var base = 0;
+                    if (doc.exists && doc.data().control && typeof doc.data().control.seq === 'number') {
+                        base = doc.data().control.seq;
+                    }
+                    commandSeq = Math.max(commandSeq, base);
+                })
+                .catch(function () {});
+        }
+
+        function sendCommand(action, value) {
+            commandSeq++;
+            try { localStorage.setItem('otbRemoteSeq', commandSeq); } catch (e) {}
+            var payload = { action: action, seq: commandSeq, ts: firebase.firestore.FieldValue.serverTimestamp() };
+            if (value !== undefined) payload.value = value;
+            db.collection('videos').doc(CONTROL_DOC).set({ control: payload }).then(function () {
+                showMsg('Command sent', 'success');
+            }).catch(function () {
+                showMsg('Failed to send command', 'error');
+            });
+        }
+
+        function showMsg(text, type) {
+            var el = document.getElementById('remote-msg');
+            el.textContent = text;
+            el.className = 'remote-msg show ' + type;
+            clearTimeout(showMsg._t);
+            showMsg._t = setTimeout(function () { el.className = 'remote-msg'; }, 1500);
+        }
+
+        function fmt(t) {
+            if (!isFinite(t) || t < 0) t = 0;
+            var m = Math.floor(t / 60);
+            var s = Math.floor(t % 60);
+            return m + ':' + String(s).padStart(2, '0');
+        }
+
+        var draggingTimeline = false;
+        var currentStatus = null;
+
+        document.getElementById('btn-play').addEventListener('click', function () {
+            sendCommand(currentStatus && currentStatus.playing ? 'pause' : 'play');
+        });
+        document.getElementById('btn-back').addEventListener('click', function () {
+            sendCommand('seek-relative', -10);
+        });
+        document.getElementById('btn-fwd').addEventListener('click', function () {
+            sendCommand('seek-relative', 10);
+        });
+        document.getElementById('btn-stop').addEventListener('click', function () {
+            sendCommand('stop');
+        });
+        document.getElementById('btn-restart').addEventListener('click', function () {
+            sendCommand('restart');
+        });
+        document.getElementById('btn-mute').addEventListener('click', function () {
+            sendCommand('mute');
+        });
+        document.getElementById('volume').addEventListener('change', function () {
+            sendCommand('volume', Number(this.value) / 100);
+        });
+        document.getElementById('volume').addEventListener('input', function () {
+            var el = document.getElementById('vi-time');
+        });
+        document.getElementById('timeline').addEventListener('input', function () {
+            draggingTimeline = true;
+        });
+        document.getElementById('timeline').addEventListener('change', function () {
+            var t = Number(this.value) / 1000 * (currentStatus ? currentStatus.duration : 0);
+            sendCommand('seek', t);
+            draggingTimeline = false;
+        });
+
+        function renderStatus(status) {
+            currentStatus = status;
+            var el = document.getElementById('remote-status');
+            if (status) {
+                el.textContent = 'Connected to audience display';
+                el.className = 'remote-status on';
+                document.getElementById('video-info').style.display = 'block';
+                document.getElementById('vi-name').textContent = status.name || 'Playing video';
+                document.getElementById('vi-time').textContent =
+                    (status.playing ? 'Playing' : 'Paused') + ' · ' + fmt(status.currentTime) + ' / ' + fmt(status.duration);
+                document.getElementById('tl-duration').textContent = fmt(status.duration);
+                if (!draggingTimeline) {
+                    var pct = status.duration > 0 ? (status.currentTime / status.duration * 1000) : 0;
+                    document.getElementById('timeline').value = pct;
+                    document.getElementById('tl-current').textContent = fmt(status.currentTime);
+                }
+                var btn = document.getElementById('btn-play');
+                btn.textContent = status.playing ? '⏸' : '▶';
+                var muteBtn = document.getElementById('btn-mute');
+                muteBtn.textContent = status.muted ? 'Unmute' : 'Mute';
+                muteBtn.classList.toggle('active-state', !!status.muted);
+            } else {
+                el.textContent = 'No audience display connected';
+                el.className = 'remote-status off';
+                document.getElementById('video-info').style.display = 'none';
+            }
+        }
+
+        db.collection('videos').doc(STATUS_DOC).onSnapshot(function (doc) {
+            if (doc.exists) {
+                var s = doc.data().status;
+                if (!s) { renderStatus(null); return; }
+                renderStatus({ currentTime: s.currentTime || 0, duration: s.duration || 0, playing: !!s.playing, muted: !!s.muted, name: s.name || '' });
+            } else {
+                renderStatus(null);
+            }
+        });
+
+        initCommandSeq();
+
+        renderStatus(null);
+    </script>
+</body>
+</html>

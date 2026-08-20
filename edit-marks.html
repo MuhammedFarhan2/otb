@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Marks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #EAF9FD;
+            color: #111827;
+            min-height: 100vh;
+        }
+        .top-bar {
+            background-color: #023047;
+            padding: 25px 20px;
+        }
+        .top-nav {
+            display: none;
+            justify-content: center;
+            gap: 10px;
+        }
+        .top-nav a {
+            color: #FFFFFF;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #FFFFFF;
+            border-radius: 8px;
+        }
+        .top-nav a:hover,
+        .top-nav a.active {
+            background-color: #FFFFFF;
+            color: #000000;
+        }
+        .content {
+            max-width: 640px;
+            margin: 20px auto;
+            padding: 0 12px 80px;
+        }
+        .page-title {
+            color: #023047;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .prog-name {
+            color: #00B4D8;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        .edit-card {
+            background-color: #FFFFFF;
+            border: 2px solid #023047;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+        .edit-title {
+            color: #023047;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #CAF0F8;
+            border: 2px solid #023047;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+        }
+        .edit-letter {
+            color: #00B4D8;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
+        .edit-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .edit-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #D9EAF2;
+            font-size: 15px;
+        }
+        .edit-table td.max-marks {
+            color: #667085;
+            text-align: center;
+            width: 70px;
+        }
+        .edit-input {
+            width: 76px;
+            text-align: center;
+            padding: 7px 4px;
+            border: 2px solid #023047;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #111827;
+            background-color: #FFFFFF;
+        }
+        .save-btn {
+            display: block;
+            margin: 24px auto 0;
+            padding: 12px 56px;
+            background-color: #FFD60A;
+            color: #111827;
+            border: 2px solid #FF8C00;
+            border-radius: 999px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(2, 48, 71, 0.25);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .save-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 14px rgba(2, 48, 71, 0.35);
+        }
+        .no-data {
+            text-align: center;
+            color: #667085;
+            padding: 30px;
+        }
+        @media (min-width: 768px) {
+            .top-nav {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+            .top-nav a {
+                padding: 4px 16px;
+                font-size: 15px;
+            }
+            .top-bar {
+                padding: 14px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <nav class="top-nav">
+            <a href="admin home.html">Home</a>
+            <a href="videos.html">Videos</a>
+            <a href="remote.html">Remote</a>
+            <a href="lock.html">Lock</a>
+            <a href="marks.html" class="active">Marks</a>
+        </nav>
+    </div>
+    <div class="content">
+        <h2 class="page-title">Edit Marks</h2>
+        <div id="prog-name" class="prog-name"></div>
+        <div id="teams"></div>
+        <button id="save-btn" class="save-btn">Save</button>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="otb-sync.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        const nameEl = document.getElementById('prog-name');
+        const container = document.getElementById('teams');
+        let p = null;
+        let data = {};
+
+        nameEl.textContent = name;
+
+        function build() {
+            if (!p) {
+                container.innerHTML = '<p class="no-data">Programme not found.</p>';
+                return;
+            }
+            const judges = Object.keys(data);
+            if (judges.length === 0) {
+                container.innerHTML = '<p class="no-data">No marks submitted for this programme yet.</p>';
+            }
+            judges.forEach(function (g) {
+                const card = document.createElement('div');
+                card.className = 'edit-card';
+                let html = '<div class="edit-title">' + g + '</div>';
+                ['A', 'B', 'C'].forEach(function (letter) {
+                    const entry = data[g][letter];
+                    html += '<div class="edit-letter">Code ' + letter + '</div>';
+                    if ((p.criteria || []).length) {
+                        html += '<table class="edit-table">';
+                        p.criteria.forEach(function (c, i) {
+                            const v = (entry && entry.rows && entry.rows[i] != null) ? entry.rows[i] : '';
+                            html += '<tr><td>' + c.agenda + '</td>' +
+                                '<td><input class="edit-input" type="number" min="0" data-g="' + g + '" data-letter="' + letter + '" data-row="' + i + '" value="' + v + '"></td>' +
+                                '<td class="max-marks">/ ' + c.marks + '</td></tr>';
+                        });
+                        html += '</table>';
+                    }
+                });
+                card.innerHTML = html;
+                container.appendChild(card);
+            });
+        }
+
+        Promise.all([Sync.loadProgrammes(), Sync.loadAllMarks()]).then(function (r) {
+            const programmes = r[0];
+            p = programmes.find(function (x) { return x.name === name; });
+            const marksData = r[1];
+            data = (p && marksData[p.name]) ? marksData[p.name] : {};
+            build();
+        });
+
+        document.getElementById('save-btn').addEventListener('click', function () {
+            if (!p) return;
+            const btn = document.getElementById('save-btn');
+            const lettersByJudge = {};
+            const deletes = [];
+            Object.keys(data).forEach(function (g) {
+                const letters = {};
+                let hasAny = false;
+                ['A', 'B', 'C'].forEach(function (letter) {
+                    const rows = [];
+                    let total = 0;
+                    let any = false;
+                    p.criteria.forEach(function (c, i) {
+                        const input = document.querySelector('.edit-input[data-g="' + g + '"][data-letter="' + letter + '"][data-row="' + i + '"]');
+                        const v = parseFloat(input.value);
+                        if (!isNaN(v)) {
+                            rows.push(v);
+                            total += v;
+                            any = true;
+                        } else {
+                            rows.push(null);
+                        }
+                    });
+                    if (any) {
+                        letters[letter] = { total: total, rows: rows };
+                        hasAny = true;
+                    }
+                });
+                if (hasAny) {
+                    lettersByJudge[g] = letters;
+                } else {
+                    delete data[g];
+                    deletes.push(Sync.deleteJudgeMarks(p.name, g));
+                }
+            });
+            const jobs = [];
+            Object.keys(lettersByJudge).forEach(function (g) {
+                jobs.push(Sync.saveJudgeMarksFull(p.name, g, lettersByJudge[g]));
+            });
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+            Promise.all(jobs.concat(deletes)).then(function () {
+                window.location.href = 'marks.html';
+            }).catch(function (err) {
+                alert('Could not save marks: ' + (err && err.message ? err.message : String(err)));
+                btn.disabled = false;
+                btn.textContent = 'Save';
+            });
+        });
+    </script>
+</body>
+</html>

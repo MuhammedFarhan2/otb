@@ -1,0 +1,14 @@
+# Nested git repos hosted separately
+Web-Page-Creator/otb-judge/
+Web-Page-Creator/Web-Page-Creator/
+Better-Bg/
+hacker/
+
+# Build artifacts / scratch
+Web-Page-Creator.zip
+Screenshot 2026-08-17 132017.png
+
+# OS junk
+Thumbs.db
+.DS_Store
+desktop.ini

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Programme</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #FFFFFF;
+            color: #111827;
+            min-height: 100vh;
+        }
+        .top-bar {
+            background-color: #023047;
+            padding: 25px 20px;
+        }
+        .form-card h2 {
+            color: #023047;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 76px);
+            padding: 20px;
+        }
+        .form-card {
+            background-color: #EAF9FD;
+            border-radius: 20px;
+            padding: 30px 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 4px 12px rgba(2, 48, 71, 0.15);
+        }
+        .form-card label {
+            font-weight: bold;
+            color: #023047;
+            display: block;
+            margin: 15px 0 5px;
+        }
+        .form-card input,
+        .form-card textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #023047;
+            border-radius: 10px;
+            font-size: 16px;
+            color: #111827;
+            outline: none;
+            background-color: #FFFFFF;
+        }
+        .form-card input:focus,
+        .form-card textarea:focus {
+            border-color: #00B4D8;
+        }
+        .btn-submit {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #FFD60A;
+            color: #111827;
+            border: none;
+            border-radius: 20px;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 8px rgba(2, 48, 71, 0.25);
+        }
+        .btn-submit:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 12px rgba(2, 48, 71, 0.35);
+        }
+        .criteria {
+            margin-top: 20px;
+        }
+        .criteria-head {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #023047;
+        }
+        .criteria-head .agenda-head {
+            flex: 2;
+        }
+        .criteria-head .marks-head {
+            flex: 1;
+        }
+        .criteria-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .criteria-row .agenda-input {
+            flex: 2;
+        }
+        .criteria-row .marks-input {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar"></div>
+    <div class="content">
+        <div class="form-card">
+            <h2>Programme</h2>
+            <form action="#" method="post">
+                <label for="programme-name">Programme Name</label>
+                <input type="text" id="programme-name" name="programme_name" required>
+
+                <div class="criteria">
+                    <div class="criteria-head">
+                        <span class="agenda-head">Criteria</span>
+                        <span class="marks-head">Marks</span>
+                    </div>
+                    <div id="criteria-rows">
+                        <div class="criteria-row">
+                            <input type="text" name="agenda[]" class="agenda-input" placeholder="Enter criteria">
+                            <input type="number" name="marks[]" class="marks-input" placeholder="Marks">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Submit</button>
+            </form>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="otb-sync.js"></script>
+    <script>
+        function addCriteriaRow() {
+            const container = document.getElementById('criteria-rows');
+            const row = document.createElement('div');
+            row.className = 'criteria-row';
+            row.innerHTML = '<input type="text" name="agenda[]" class="agenda-input" placeholder="Enter criteria">' +
+                            '<input type="number" name="marks[]" class="marks-input" placeholder="Marks">';
+            container.appendChild(row);
+            return row;
+        }
+
+        document.getElementById('criteria-rows').addEventListener('input', function (e) {
+            const rows = this.querySelectorAll('.criteria-row');
+            const lastRow = rows[rows.length - 1];
+            const target = e.target;
+            if (target.classList.contains('agenda-input') && target.value.trim() !== '' && target === lastRow.querySelector('.agenda-input')) {
+                addCriteriaRow();
+            }
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const editIndex = urlParams.get('edit');
+
+        if (editIndex !== null) {
+            Sync.loadProgrammes().then(function (list) {
+                const p = list[parseInt(editIndex)];
+                if (p) {
+                    document.getElementById('programme-name').value = p.name;
+                    const container = document.getElementById('criteria-rows');
+                    container.innerHTML = '';
+                    p.criteria.forEach(function (c) {
+                        const row = addCriteriaRow();
+                        row.querySelector('.agenda-input').value = c.agenda;
+                        row.querySelector('.marks-input').value = c.marks;
+                    });
+                }
+            });
+        }
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const btn = document.querySelector('.btn-submit');
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+            Sync.loadProgrammes().then(function (list) {
+                const programmes = list;
+                const name = document.getElementById('programme-name').value.trim();
+                const criteria = [];
+                document.querySelectorAll('.criteria-row').forEach(function (row) {
+                    const agenda = row.querySelector('.agenda-input').value.trim();
+                    const marks = row.querySelector('.marks-input').value;
+                    if (agenda || marks) {
+                        criteria.push({ agenda: agenda, marks: marks });
+                    }
+                });
+                if (editIndex !== null) {
+                    programmes[parseInt(editIndex)] = {
+                        name: name,
+                        criteria: criteria,
+                        locked: programmes[parseInt(editIndex)].locked || false
+                    };
+                } else {
+                    programmes.push({ name: name, criteria: criteria, locked: false });
+                }
+                Sync.saveProgrammes(programmes).then(function () {
+                    window.location.href = 'admin home.html';
+                }).catch(function () {
+                    btn.disabled = false;
+                    btn.textContent = 'Submit';
+                    alert('Could not save. Check your connection and try again.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

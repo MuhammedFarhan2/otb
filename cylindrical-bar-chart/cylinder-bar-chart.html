@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>3D Cylindrical Bar Chart</title>
+<style>
+  /* ===========================================================
+     3D CYLINDRICAL BAR CHART
+     Pure HTML + CSS. Copy this whole block into your site,
+     or just copy the .chart markup + the CSS below.
+     =========================================================== */
+
+  :root {
+    --chart-max-height: 380px;   /* height that represents 100% */
+    --cyl-width: 110px;          /* width/diameter of each cylinder */
+    --ellipse-height: 34px;      /* how "deep" the 3D top/bottom looks */
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(circle at 50% 40%, #f2f5f7, #d6dde1);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 60px 20px;
+  }
+
+  .chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 48px;
+  }
+
+  /* Each column holds the cylinder */
+  .bar {
+    position: relative;
+    width: var(--cyl-width);
+    /* --value is set inline per bar (0 to 100) */
+    height: calc(var(--chart-max-height) * (var(--value) / 100));
+  }
+
+  /* The main tube body with a left-to-right gradient for the rounded look */
+  .cylinder {
+    position: absolute;
+    inset: 0;
+    top: calc(var(--ellipse-height) / 2);
+    border-radius: 0 0 50% 50% / 0 0 var(--ellipse-height) var(--ellipse-height);
+    background: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color) 60%, black) 0%,
+      var(--color) 30%,
+      color-mix(in srgb, var(--color) 70%, white) 50%,
+      var(--color) 70%,
+      color-mix(in srgb, var(--color) 55%, black) 100%
+    );
+  }
+
+  /* Top ellipse (the open lid of the cylinder) */
+  .cylinder::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--ellipse-height) / -2);
+    left: 0;
+    width: 100%;
+    height: var(--ellipse-height);
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color) 78%, white);
+  }
+
+  /* Percentage label sitting above the cylinder */
+  .bar .value {
+    position: absolute;
+    top: -46px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 30px;
+    font-weight: 800;
+    color: #333;
+  }
+
+  .bar .value span {
+    font-size: 18px;
+    vertical-align: super;
+  }
+
+  /* Optional caption under each bar */
+  .bar .label {
+    position: absolute;
+    bottom: -34px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: color-mix(in srgb, var(--color) 60%, black);
+  }
+</style>
+</head>
+<body>
+  <div class="chart">
+    <div class="bar" style="--value: 20; --color: #e05a5a;">
+      <div class="value">20<span>%</span></div>
+      <div class="cylinder"></div>
+      <div class="label">INFO 01</div>
+    </div>
+
+    <div class="bar" style="--value: 80; --color: #f2c53d;">
+      <div class="value">80<span>%</span></div>
+      <div class="cylinder"></div>
+      <div class="label">INFO 02</div>
+    </div>
+
+    <div class="bar" style="--value: 30; --color: #55b06a;">
+      <div class="value">30<span>%</span></div>
+      <div class="cylinder"></div>
+      <div class="label">INFO 03</div>
+    </div>
+
+    <div class="bar" style="--value: 75; --color: #3d8fc4;">
+      <div class="value">75<span>%</span></div>
+      <div class="cylinder"></div>
+      <div class="label">INFO 04</div>
+    </div>
+
+    <div class="bar" style="--value: 60; --color: #8e5aa8;">
+      <div class="value">60<span>%</span></div>
+      <div class="cylinder"></div>
+      <div class="label">INFO 05</div>
+    </div>
+  </div>
+</body>
+</html>
