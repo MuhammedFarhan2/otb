@@ -525,9 +525,24 @@ function renderMarks() {
                     Object.keys(presentData).forEach(function (k) { presentData[k] = false; });
                     if (!wasPresent) presentData[p.name] = true;
                     localStorage.setItem('present', JSON.stringify(presentData));
-                    Sync.savePresent(presentData);
-                    db.collection('app').doc('display').set({ mode: null }).catch(function () {});
                     renderMarks();
+                    let attempts = 0;
+                    const trySave = function () {
+                        Sync.savePresent(presentData)
+                            .then(function () {
+                                flashStatus((wasPresent ? 'Removed ' : 'Presenting ') + p.name + ' on the audience.');
+                            })
+                            .catch(function (err) {
+                                attempts += 1;
+                                if (attempts < 3) {
+                                    setTimeout(trySave, 1200);
+                                } else {
+                                    flashStatus('Could not reach the cloud. Present may not show on the audience. Check your connection.');
+                                }
+                            });
+                    };
+                    trySave();
+                    db.collection('app').doc('display').set({ mode: null }).catch(function () {});
                 });
                 section.appendChild(btn);
 
