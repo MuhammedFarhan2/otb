@@ -685,10 +685,14 @@ function renderMarks() {
                     localStorage.setItem('overallScores', JSON.stringify(map));
                     Sync.saveOverallScores(map)
                         .then(function () {
-                            flashStatus('Scores saved. Visible on the audience overall view.');
+                            flashStatus('Scores saved. Showing Overall on the audience.');
                         })
                         .catch(function (err) {
                             flashStatus('Save failed: ' + (err && err.message ? err.message : String(err)));
+                        });
+                    db.collection('app').doc('display').set({ mode: 'overall' })
+                        .catch(function (err) {
+                            flashStatus('Display failed: ' + (err && err.message ? err.message : String(err)));
                         });
                 });
             }
