@@ -38,6 +38,19 @@ var Sync = {
         localStorage.setItem('overall', JSON.stringify(map));
         return db.collection('app').doc('overall').set({ map: map });
     },
+    loadOverallScores: function () {
+        return db.collection('app').doc('overallScores').get().then(function (d) {
+            var map = d.exists && d.data().map ? d.data().map : {};
+            localStorage.setItem('overallScores', JSON.stringify(map));
+            return map;
+        }).catch(function () {
+            return JSON.parse(localStorage.getItem('overallScores') || '{}');
+        });
+    },
+    saveOverallScores: function (map) {
+        localStorage.setItem('overallScores', JSON.stringify(map));
+        return db.collection('app').doc('overallScores').set({ map: map });
+    },
     loadAllMarks: function () {
         return db.collection('marks').get().then(function (snap) {
             var jobs = [];
@@ -118,6 +131,13 @@ var Sync = {
         return db.collection('app').doc('overall').onSnapshot(function (d) {
             var map = d.exists && d.data().map ? d.data().map : {};
             localStorage.setItem('overall', JSON.stringify(map));
+            cb(map);
+        });
+    },
+    listenOverallScores: function (cb) {
+        return db.collection('app').doc('overallScores').onSnapshot(function (d) {
+            var map = d.exists && d.data().map ? d.data().map : {};
+            localStorage.setItem('overallScores', JSON.stringify(map));
             cb(map);
         });
     }

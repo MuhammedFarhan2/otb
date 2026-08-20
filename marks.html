@@ -236,6 +236,64 @@
         .overall-submit-btn:hover {
             transform: scale(1.03);
         }
+        .manual-entry {
+            margin-top: 14px;
+            border-top: 2px solid #023047;
+            padding-top: 12px;
+        }
+        .manual-title {
+            color: #023047;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .manual-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .manual-team {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .manual-team label {
+            color: #023047;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .manual-team input {
+            width: 96px;
+            padding: 8px;
+            border: 2px solid #023047;
+            border-radius: 8px;
+            font-size: 17px;
+            text-align: center;
+            color: #023047;
+            background-color: #FFFFFF;
+        }
+        .manual-submit-btn {
+            display: block;
+            margin: 4px auto 8px;
+            padding: 10px 40px;
+            border: none;
+            border-radius: 999px;
+            background-color: #023047;
+            color: #FFFFFF;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(2, 48, 71, 0.2);
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .manual-submit-btn:hover {
+            transform: scale(1.03);
+            background-color: #03485F;
+        }
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -501,7 +559,7 @@ function renderMarks() {
                 renderMarks();
             }, 150);
         }
-        Promise.all([Sync.loadProgrammes(), Sync.loadAllMarks(), Sync.loadPresent(), Sync.loadOverall()])
+        Promise.all([Sync.loadProgrammes(), Sync.loadAllMarks(), Sync.loadPresent(), Sync.loadOverall(), Sync.loadOverallScores()])
             .then(function () { renderMarks(); })
             .catch(function () { renderMarks(); })
             .then(function () {
@@ -509,6 +567,7 @@ function renderMarks() {
                 Sync.listenProgrammes(scheduleRender);
                 Sync.listenPresent(scheduleRender);
                 Sync.listenOverall(scheduleRender);
+                Sync.listenOverallScores(scheduleRender);
             });
         var syncStatus = document.getElementById('sync-status');
         var statusTimer = null;
@@ -599,8 +658,40 @@ function renderMarks() {
                     html += '<p class="no-data" style="padding:10px;">Based on ' + presentCount + ' added programme(s).</p>';
                 }
             }
+            const overallScores = JSON.parse(localStorage.getItem('overallScores') || '{}');
+            html += '<div class="manual-entry">' +
+                '<div class="manual-title">Enter Overall Scores Manually</div>' +
+                '<div class="manual-grid">';
+            ['A', 'B', 'C'].forEach(function (l) {
+                html += '<div class="manual-team">' +
+                    '<label>' + SCHOOL_NAMES[l] + '</label>' +
+                    '<input type="number" min="0" step="0.1" id="os-' + l + '" value="' + (overallScores[l] != null ? overallScores[l] : '') + '">' +
+                    '</div>';
+            });
+            html += '</div>' +
+                '<button id="submit-scores-btn" class="manual-submit-btn">Submit</button>' +
+                '</div>';
             html += '<button id="submit-overall-btn" class="overall-submit-btn' + (anyPresent ? '' : ' active') + '">Submit Overall</button>';
             section.innerHTML = html;
+            var msb = section.querySelector('#submit-scores-btn');
+            if (msb) {
+                msb.addEventListener('click', function () {
+                    const map = {};
+                    ['A', 'B', 'C'].forEach(function (l) {
+                        const inp = section.querySelector('#os-' + l);
+                        const v = inp ? inp.value : '';
+                        map[l] = v === '' ? null : Number(v);
+                    });
+                    localStorage.setItem('overallScores', JSON.stringify(map));
+                    Sync.saveOverallScores(map)
+                        .then(function () {
+                            flashStatus('Scores saved. Visible on the audience overall view.');
+                        })
+                        .catch(function (err) {
+                            flashStatus('Save failed: ' + (err && err.message ? err.message : String(err)));
+                        });
+                });
+            }
             var sb = section.querySelector('#submit-overall-btn');
             if (sb) {
                 sb.addEventListener('click', function () {
