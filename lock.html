@@ -233,9 +233,7 @@
                     e.preventDefault();
                     e.stopPropagation();
                     const programmes = JSON.parse(localStorage.getItem('programmes') || '[]');
-                    programmes.forEach(function (pr, idx) {
-                        pr.locked = (idx === i);
-                    });
+                    programmes[i].locked = !programmes[i].locked;
                     localStorage.setItem('programmes', JSON.stringify(programmes));
                     Sync.saveProgrammes(programmes);
                     renderProgrammes();
